@@ -1,14 +1,14 @@
 # siprocket
+
 Fast SIP and SDP Parser
 
 ![Alt](https://travis-ci.org/marv2097/siprocket.svg?branch=master "Travis Build")
-
 
 siprocket is intended for Monitoring applications that need to parse SIP messages on the fly. It allows fast and structured access to the most commonly needed fields from both the SIP header and SDP payload. While intended for use in packet capture systems it could also be adapted to SIP Client and Server tasks.
 
 ### Performance:
 
-Without concurrency siprocket can parse approx 100k messages per second on a average xeon CPU. Depending on your application you may be able to parse concurrently which would greatly increase the throughput. The size and complexity of the SIP messages you have to parse will also influence performance. 
+Without concurrency siprocket can parse approx 100k messages per second on a average xeon CPU. Depending on your application you may be able to parse concurrently which would greatly increase the throughput. The size and complexity of the SIP messages you have to parse will also influence performance.
 
 ### Install:
 
@@ -17,7 +17,7 @@ Add the Import `"github.com/marv2097/siprocket"` in your code.
 
 ### Usage:
 
-siprocket expects data from a capture interface, socket or file as a slice of bytes. In most applications you will have already parsed the lower layers and pass the SIP payload to siprocket to be parsed. The output from the Parse function is a stuct that contains all of the top level items found in the SIP message. These can then be accessed using a simple dot notation. Most outputs are also slices of bytes with the exception of a few fields. 
+siprocket expects data from a capture interface, socket or file as a slice of bytes. In most applications you will have already parsed the lower layers and pass the SIP payload to siprocket to be parsed. The output from the Parse function is a stuct that contains all of the top level items found in the SIP message. These can then be accessed using a simple dot notation. Most outputs are also slices of bytes with the exception of a few fields.
 
 In this simple example we will use a SIP message defined directly in our code below. It will parse the message and print out the user-part of the 'From' and 'To' header fields.
 
@@ -38,6 +38,7 @@ sip := siprocket.Parse(raw)
 fmt.Print("From: ", string(sip.From.User), " To: ", string(sip.To.User))
 
 ```
+
 Will Print `From: HarryJones To: JohnSmith`
 
 ### Output Data Structure
@@ -45,7 +46,7 @@ Will Print `From: HarryJones To: JohnSmith`
 Many of the SIP headers are in simple key value pairs. For example the Call-ID field, these kinds of fields all share the same format used to store them. It has a slice of bytes for the value, and an optional source variable.
 
 ```go
-type sipVal struct {
+type SipVal struct {
 	Value []byte // Sip Value
 	Src   []byte // Full source if needed
 }
@@ -53,19 +54,19 @@ type sipVal struct {
 
 To access them we just reference the field name followed by the word `Value`. So if we wanted to get the Call-ID from the example above we would just reference `sip.CallId.Value`. Other fields that support this format are:
 
-Header Field | Reference
---- | ---
-User-Agent | `Ua`
-Expires | `Exp`
-Max-Forwards | `MaxFwd`
-Call-Id | `CallId`
-Content-Type | `ContType`
-Content-Length | `ContLen`
+| Header Field   | Reference  |
+| -------------- | ---------- |
+| User-Agent     | `Ua`       |
+| Expires        | `Exp`      |
+| Max-Forwards   | `MaxFwd`   |
+| Call-Id        | `CallId`   |
+| Content-Type   | `ContType` |
+| Content-Length | `ContLen`  |
 
 More complicated fields have specific structs to hold the data they contain, for example the From and To header field has each section broken out and are identical:
 
 ```go
-type sipTo struct {
+type SipTo struct {
 	UriType  string // Type of URI sip, sips, tel etc
 	Name     []byte // Named portion of URI
 	User     []byte // User part
@@ -81,14 +82,14 @@ type sipTo struct {
 
 When a field is present in the SIP header multiple times we can use a slice of its struct to hold the multiple values. These can then be itterated over with the `range` keyword or their size checked with the `len` keyword. An example of this is the Via header field. There can be multiple Via's in a SIP message and they are kept in order as the message is parsed from the first line to the last.
 
-For a Via, The key part of the `SipMsg` struct is shown along with the `sipVia` struct:
+For a Via, The key part of the `SipMsg` struct is shown along with the `SipVia` struct:
 
 ```go
 type SipMsg struct
-    Via []sipVia    // Slice of SIP Vias
-    
+    Via []SipVia    // Slice of SIP Vias
 
-type sipVia struct {
+
+type SipVia struct {
 	Trans  string // Type of Transport udp, tcp, tls, sctp etc
 	Host   []byte // Host part
 	Port   []byte // Port number
@@ -114,15 +115,3 @@ If SDP is found within a SIP message then it will be parsed too. Media Descripti
 ### Reading SIP from other sources
 
 In most real world applications you want to read SIP from an external source. This may be a file, network socket or capture device. If you are wanting to capture with pf_ring then you can checkout my cutdown [pf_ring go library](https://github.com/marv2097/gopfring).
-
-
-
-
-
-
-
-
-
-
-
-

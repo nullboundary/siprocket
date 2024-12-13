@@ -10,30 +10,30 @@ var sip_type = 0
 var keep_src = true
 
 type SipMsg struct {
-	Req      sipReq
-	From     sipFrom
-	To       sipTo
-	Contact  sipContact
-	Via      []sipVia
-	Cseq     sipCseq
-	Ua       sipVal
-	Exp      sipVal
-	MaxFwd   sipVal
-	CallId   sipVal
-	ContType sipVal
-	ContLen  sipVal
-	XGammaIP sipVal
+	Req      SipReq
+	From     SipFrom
+	To       SipTo
+	Contact  SipContact
+	Via      []SipVia
+	Cseq     SipCseq
+	Ua       SipVal
+	Exp      SipVal
+	MaxFwd   SipVal
+	CallId   SipVal
+	ContType SipVal
+	ContLen  SipVal
+	XGammaIP SipVal
 
 	Sdp SdpMsg
 }
 
 type SdpMsg struct {
-	MediaDesc sdpMediaDesc
-	Attrib    []sdpAttrib
-	ConnData  sdpConnData
+	MediaDesc SdpMediaDesc
+	Attrib    []SdpAttrib
+	ConnData  SdpConnData
 }
 
-type sipVal struct {
+type SipVal struct {
 	Value []byte // Sip Value
 	Src   []byte // Full source if needed
 }
@@ -43,9 +43,9 @@ func Parse(v []byte) (output SipMsg) {
 
 	// Allow multiple vias and media Attribs
 	via_idx := 0
-	output.Via = make([]sipVia, 0, 8)
+	output.Via = make([]SipVia, 0, 8)
 	attr_idx := 0
-	output.Sdp.Attrib = make([]sdpAttrib, 0, 8)
+	output.Sdp.Attrib = make([]SdpAttrib, 0, 8)
 
 	lines := bytes.Split(v, []byte("\r\n"))
 	if len(lines) < 2 {
@@ -76,7 +76,7 @@ func Parse(v []byte) (output SipMsg) {
 				case lhdr == "m" || lhdr == "contact":
 					parseSipContact(lval, &output.Contact)
 				case lhdr == "v" || lhdr == "via":
-					var tmpVia sipVia
+					var tmpVia SipVia
 					output.Via = append(output.Via, tmpVia)
 					parseSipVia(lval, &output.Via[via_idx])
 					via_idx++
@@ -117,7 +117,7 @@ func Parse(v []byte) (output SipMsg) {
 				case lhdr == "c":
 					parseSdpConnectionData(lval, &output.Sdp.ConnData)
 				case lhdr == "a":
-					var tmpAttrib sdpAttrib
+					var tmpAttrib SdpAttrib
 					output.Sdp.Attrib = append(output.Sdp.Attrib, tmpAttrib)
 					parseSdpAttrib(lval, &output.Sdp.Attrib[attr_idx])
 					attr_idx++

@@ -14,7 +14,7 @@ import (
 	"fmt"
 )
 
-type sipReq struct {
+type SipReq struct {
 	Method     []byte // Sip Method eg INVITE etc
 	UriType    []byte // Type of URI sip, sips, tel etc
 	StatusCode []byte // Status Code eg 100
@@ -27,7 +27,7 @@ type sipReq struct {
 }
 
 // request or response line
-func parseSipReq(v []byte, out *sipReq) error {
+func parseSipReq(v []byte, out *SipReq) error {
 
 	var idx int
 
@@ -205,7 +205,7 @@ func parseSipReq(v []byte, out *sipReq) error {
 	return nil
 }
 
-func parseSipResp(v []byte, out *sipReq) error {
+func parseSipResp(v []byte, out *SipReq) error {
 	var idx, idy int
 
 	// Get statuscode middle bit.
@@ -232,7 +232,7 @@ func parseSipResp(v []byte, out *sipReq) error {
 	return nil
 }
 
-func parseSipReqHeaderParams(v []byte, out *sipReq) {
+func parseSipReqHeaderParams(v []byte, out *SipReq) {
 	var idx int
 
 	for {

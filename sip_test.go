@@ -12,7 +12,7 @@ func Test_sipParse_Nonsense(t *testing.T) {
 
 	msg := `asdf`
 	exp = SipMsg{
-		Req: sipReq{
+		Req: SipReq{
 			Method:     []byte(nil),
 			UriType:    []byte(nil),
 			StatusCode: []byte(nil),
@@ -23,7 +23,7 @@ func Test_sipParse_Nonsense(t *testing.T) {
 			UserType:   []byte(nil),
 			Src:        []byte("asdf"),
 		},
-		From: sipFrom{
+		From: SipFrom{
 			UriType: []byte(nil),
 			Name:    []byte(nil),
 			User:    []byte(nil),
@@ -33,7 +33,7 @@ func Test_sipParse_Nonsense(t *testing.T) {
 			Tag:     []byte(nil),
 			Src:     []byte(nil),
 		},
-		To: sipTo{
+		To: SipTo{
 			UriType: []byte(nil),
 			Name:    []byte(nil),
 			User:    []byte(nil),
@@ -43,7 +43,7 @@ func Test_sipParse_Nonsense(t *testing.T) {
 			Tag:     []byte(nil),
 			Src:     []byte(nil),
 		},
-		Contact: sipContact{
+		Contact: SipContact{
 			UriType: []byte(nil),
 			Name:    []byte(nil),
 			User:    []byte(nil),
@@ -54,51 +54,51 @@ func Test_sipParse_Nonsense(t *testing.T) {
 			Expires: []byte(nil),
 			Src:     []byte(nil),
 		},
-		Via: []sipVia{},
-		Cseq: sipCseq{
+		Via: []SipVia{},
+		Cseq: SipCseq{
 			Id:     []byte(nil),
 			Method: []byte(nil),
 			Src:    []byte(nil),
 		},
-		Ua: sipVal{
+		Ua: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		Exp: sipVal{
+		Exp: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		MaxFwd: sipVal{
+		MaxFwd: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		CallId: sipVal{
+		CallId: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		ContType: sipVal{
+		ContType: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		ContLen: sipVal{
+		ContLen: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		XGammaIP: sipVal{
+		XGammaIP: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
 
 		Sdp: SdpMsg{
-			MediaDesc: sdpMediaDesc{
+			MediaDesc: SdpMediaDesc{
 				MediaType: []byte(nil),
 				Port:      []byte(nil),
 				Proto:     []byte(nil),
 				Fmt:       []byte(nil),
 				Src:       []byte(nil),
 			},
-			Attrib: []sdpAttrib{},
-			ConnData: sdpConnData{
+			Attrib: []SdpAttrib{},
+			ConnData: SdpConnData{
 				AddrType: []byte(nil),
 				ConnAddr: []byte(nil),
 				Src:      []byte(nil),
@@ -139,7 +139,7 @@ c=IN IP4 127.0.0.1
 a=rtpmap:111 opus/48000/2
 a=rtpmap:9 G722/8000`
 	exp = SipMsg{
-		Req: sipReq{
+		Req: SipReq{
 			Method:     []byte("INVITE"),
 			UriType:    []byte("sip"),
 			StatusCode: []byte(nil),
@@ -150,7 +150,7 @@ a=rtpmap:9 G722/8000`
 			UserType:   []byte(nil),
 			Src:        []byte("INVITE sip:123456789@testcompany.com SIP/2.0"),
 		},
-		From: sipFrom{
+		From: SipFrom{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("PersonA_PC_123456789"),
@@ -160,7 +160,7 @@ a=rtpmap:9 G722/8000`
 			Tag:     []byte("ujpedsvksh"),
 			Src:     []byte("<sip:PersonA_PC_123456789@testcompany.com>;tag=ujpedsvksh"),
 		},
-		To: sipTo{
+		To: SipTo{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("123456789"),
@@ -170,7 +170,7 @@ a=rtpmap:9 G722/8000`
 			Tag:     []byte(nil),
 			Src:     []byte("<sip:123456789@testcompany.com>"),
 		},
-		Contact: sipContact{
+		Contact: SipContact{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("PersonA_PC_123456789"),
@@ -181,7 +181,7 @@ a=rtpmap:9 G722/8000`
 			Expires: []byte(nil),
 			Src:     []byte("<sip:PersonA_PC_123456789@testcompany.com;ob>"),
 		},
-		Via: []sipVia{
+		Via: []SipVia{
 			{
 				Trans:  "wss",
 				Host:   []byte("testcompany.com"),
@@ -194,48 +194,48 @@ a=rtpmap:9 G722/8000`
 				Src:    []byte("SIP/2.0/WSS testcompany.com;branch=z0GMslasdf"),
 			},
 		},
-		Cseq: sipCseq{
+		Cseq: SipCseq{
 			Id:     []byte("8918"),
 			Method: []byte("INVITE"),
 			Src:    []byte("8918 INVITE"),
 		},
-		Ua: sipVal{
+		Ua: SipVal{
 			Value: []byte("softphone-desktop"),
 			Src:   []byte(nil),
 		},
-		Exp: sipVal{
+		Exp: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		MaxFwd: sipVal{
+		MaxFwd: SipVal{
 			Value: []byte("69"),
 			Src:   []byte(nil),
 		},
-		CallId: sipVal{
+		CallId: SipVal{
 			Value: []byte("kasdf023l4qklaansdf02"),
 			Src:   []byte(nil),
 		},
-		ContType: sipVal{
+		ContType: SipVal{
 			Value: []byte("application/sdp"),
 			Src:   []byte(nil),
 		},
-		ContLen: sipVal{
+		ContLen: SipVal{
 			Value: []byte("1245"),
 			Src:   []byte(nil),
 		},
-		XGammaIP: sipVal{
+		XGammaIP: SipVal{
 			Value: []byte("127.0.0.1"),
 			Src:   []byte(nil),
 		},
 		Sdp: SdpMsg{
-			MediaDesc: sdpMediaDesc{
+			MediaDesc: SdpMediaDesc{
 				MediaType: []byte("audio"),
 				Port:      []byte("51268"),
 				Proto:     []byte("RTP/AVP"),
 				Fmt:       []byte("111 9 8 101"),
 				Src:       []byte("audio 51268 RTP/AVP 111 9 8 101"),
 			},
-			Attrib: []sdpAttrib{
+			Attrib: []SdpAttrib{
 				{
 					Cat: []byte("rtpmap"),
 					Val: []byte("111 opus/48000/2"),
@@ -247,7 +247,7 @@ a=rtpmap:9 G722/8000`
 					Src: []byte("rtpmap:9 G722/8000"),
 				},
 			},
-			ConnData: sdpConnData{
+			ConnData: SdpConnData{
 				AddrType: []byte("IP4"),
 				ConnAddr: []byte("127.0.0.1"),
 				Src:      []byte("IN IP4 127.0.0.1"),
@@ -297,7 +297,7 @@ a=rtpmap:101 telephone-event/8000
 a=fmtp:101 0-15
 a=ptime:20`
 	exp = SipMsg{
-		Req: sipReq{
+		Req: SipReq{
 			Method:     []byte("INVITE"),
 			UriType:    []byte("sip"),
 			StatusCode: []byte(nil),
@@ -308,7 +308,7 @@ a=ptime:20`
 			UserType:   []byte("phone"),
 			Src:        []byte("INVITE sip:8508000123456;phone-context=+44@10.0.0.1;user=phone SIP/2.0"),
 		},
-		From: sipFrom{
+		From: SipFrom{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("+44111223344"),
@@ -320,7 +320,7 @@ a=ptime:20`
 			Tag: []byte("123456789-131732457"),
 			Src: []byte("<sip:+44111223344@10.0.0.2;b>;tag=123456789-131732457"),
 		},
-		To: sipTo{
+		To: SipTo{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("8508000123456"),
@@ -333,7 +333,7 @@ a=ptime:20`
 			Tag: []byte(nil),
 			Src: []byte("<sip:8508000123456;phone-context=+44@10.0.0.1;user=phone>"),
 		},
-		Contact: sipContact{
+		Contact: SipContact{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("+44111223344"),
@@ -344,7 +344,7 @@ a=ptime:20`
 			Expires: []byte(nil),
 			Src:     []byte("<sip:+44111223344@10.0.0.2:5060>"),
 		},
-		Via: []sipVia{
+		Via: []SipVia{
 			{
 				Trans:  "udp",
 				Host:   []byte("10.0.0.2"),
@@ -357,48 +357,48 @@ a=ptime:20`
 				Src:    []byte("SIP/2.0/UDP 10.0.0.2:5060;branch=saiasdofijwemropasdf"),
 			},
 		},
-		Cseq: sipCseq{
+		Cseq: SipCseq{
 			Id:     []byte("1"),
 			Method: []byte("INVITE"),
 			Src:    []byte("1 INVITE"),
 		},
-		Ua: sipVal{
+		Ua: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		Exp: sipVal{
+		Exp: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		MaxFwd: sipVal{
+		MaxFwd: SipVal{
 			Value: []byte("69"),
 			Src:   []byte(nil),
 		},
-		CallId: sipVal{
+		CallId: SipVal{
 			Value: []byte("20230069-123456789-2021222324@server1.mycompany.com"),
 			Src:   []byte(nil),
 		},
-		ContType: sipVal{
+		ContType: SipVal{
 			Value: []byte("application/sdp"),
 			Src:   []byte(nil),
 		},
-		ContLen: sipVal{
+		ContLen: SipVal{
 			Value: []byte("250"),
 			Src:   []byte(nil),
 		},
-		XGammaIP: sipVal{
+		XGammaIP: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
 		Sdp: SdpMsg{
-			MediaDesc: sdpMediaDesc{
+			MediaDesc: SdpMediaDesc{
 				MediaType: []byte("audio"),
 				Port:      []byte("11484"),
 				Proto:     []byte("RTP/AVP"),
 				Fmt:       []byte("0 8 18 101"),
 				Src:       []byte("audio 11484 RTP/AVP 0 8 18 101"),
 			},
-			Attrib: []sdpAttrib{
+			Attrib: []SdpAttrib{
 				{
 					Cat: []byte("rtpmap"),
 					Val: []byte("0 PCMU/8000"),
@@ -430,7 +430,7 @@ a=ptime:20`
 					Src: []byte("ptime:20"),
 				},
 			},
-			ConnData: sdpConnData{
+			ConnData: SdpConnData{
 				AddrType: []byte("IP4"),
 				ConnAddr: []byte("10.120.204.1"),
 				Src:      []byte("IN IP4 10.120.204.1"),
@@ -465,7 +465,7 @@ func Test_sipParse_GenericTest(t *testing.T) {
 	Content-Length: 0
 	`
 	exp = SipMsg{
-		Req: sipReq{
+		Req: SipReq{
 			Method:     []byte(nil),
 			UriType:    []byte(nil),
 			StatusCode: []byte(nil),
@@ -476,7 +476,7 @@ func Test_sipParse_GenericTest(t *testing.T) {
 			UserType:   []byte(nil),
 			Src:        []byte(nil),
 		},
-		From: sipFrom{
+		From: SipFrom{
 			UriType: []byte(nil),
 			Name:    []byte(nil),
 			User:    []byte(nil),
@@ -486,7 +486,7 @@ func Test_sipParse_GenericTest(t *testing.T) {
 			Tag:     []byte(nil),
 			Src:     []byte(nil),
 		},
-		To: sipTo{
+		To: SipTo{
 			UriType: []byte(nil),
 			Name:    []byte(nil),
 			User:    []byte(nil),
@@ -496,7 +496,7 @@ func Test_sipParse_GenericTest(t *testing.T) {
 			Tag:     []byte(nil),
 			Src:     []byte(nil),
 		},
-		Contact: sipContact{
+		Contact: SipContact{
 			UriType: []byte(nil),
 			Name:    []byte(nil),
 			User:    []byte(nil),
@@ -507,51 +507,51 @@ func Test_sipParse_GenericTest(t *testing.T) {
 			Expires: []byte(nil),
 			Src:     []byte(nil),
 		},
-		Via: []sipVia{},
-		Cseq: sipCseq{
+		Via: []SipVia{},
+		Cseq: SipCseq{
 			Id:     []byte(nil),
 			Method: []byte(nil),
 			Src:    []byte(nil),
 		},
-		Ua: sipVal{
+		Ua: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		Exp: sipVal{
+		Exp: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		MaxFwd: sipVal{
+		MaxFwd: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		CallId: sipVal{
+		CallId: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		ContType: sipVal{
+		ContType: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		ContLen: sipVal{
+		ContLen: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		XGammaIP: sipVal{
+		XGammaIP: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
 
 		Sdp: SdpMsg{
-			MediaDesc: sdpMediaDesc{
+			MediaDesc: SdpMediaDesc{
 				MediaType: []byte(nil),
 				Port:      []byte(nil),
 				Proto:     []byte(nil),
 				Fmt:       []byte(nil),
 				Src:       []byte(nil),
 			},
-			Attrib: []sdpAttrib{},
-			ConnData: sdpConnData{
+			Attrib: []SdpAttrib{},
+			ConnData: SdpConnData{
 				AddrType: []byte(nil),
 				ConnAddr: []byte(nil),
 				Src:      []byte(nil),
@@ -581,7 +581,7 @@ func Test_sipParse_302Test(t *testing.T) {
 	Content-Length:0	
 	`
 	exp = SipMsg{
-		Req: sipReq{
+		Req: SipReq{
 			Method:     []byte(nil),
 			UriType:    []byte(nil),
 			StatusCode: []byte("302"),
@@ -592,7 +592,7 @@ func Test_sipParse_302Test(t *testing.T) {
 			UserType:   []byte(nil),
 			Src:        []byte("SIP/2.0 302 Moved temporarily"),
 		},
-		From: sipFrom{
+		From: SipFrom{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("ali.winter_PC_01173747677"),
@@ -602,7 +602,7 @@ func Test_sipParse_302Test(t *testing.T) {
 			Tag:     []byte("atpbkpq86t"),
 			Src:     []byte("<sip:ali.winter_PC_01173747677@novatm.co.uk>;tag=atpbkpq86t"),
 		},
-		To: sipTo{
+		To: SipTo{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte("ali.winter_PC_01173747677"),
@@ -612,7 +612,7 @@ func Test_sipParse_302Test(t *testing.T) {
 			Tag:     []byte("990900480-1661244511483"),
 			Src:     []byte("<sip:ali.winter_PC_01173747677@novatm.co.uk>;tag=990900480-1661244511483"),
 		},
-		Contact: sipContact{
+		Contact: SipContact{
 			UriType: []byte("sip"),
 			Name:    []byte(nil),
 			User:    []byte(nil),
@@ -623,7 +623,7 @@ func Test_sipParse_302Test(t *testing.T) {
 			Expires: []byte(nil),
 			Src:     []byte("<sip:novatm.co.uk:5060;transport=udp;maddr=10.124.133.15>;q=0.5"),
 		},
-		Via: []sipVia{
+		Via: []SipVia{
 			{
 				Trans:  "udp",
 				Host:   []byte("10.124.148.3"),
@@ -636,50 +636,50 @@ func Test_sipParse_302Test(t *testing.T) {
 				Src:    []byte("SIP/2.0/UDP 10.124.148.3;branch=z9hG4bKbbab.f2349cdf1b0788f23b2648c6829b675d.0"),
 			},
 		},
-		Cseq: sipCseq{
+		Cseq: SipCseq{
 			Id:     []byte("6"),
 			Method: []byte("REGISTER"),
 			Src:    []byte("6 REGISTER"),
 		},
-		Ua: sipVal{
+		Ua: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		Exp: sipVal{
+		Exp: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		MaxFwd: sipVal{
+		MaxFwd: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		CallId: sipVal{
+		CallId: SipVal{
 			Value: []byte("rpuvgblrlonejfnjc7jcjh"),
 			Src:   []byte("rpuvgblrlonejfnjc7jcjh"),
 		},
-		ContType: sipVal{
+		ContType: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		ContLen: sipVal{
+		ContLen: SipVal{
 			Value: []byte("0"),
 			Src:   []byte("0"),
 		},
-		XGammaIP: sipVal{
+		XGammaIP: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
 
 		Sdp: SdpMsg{
-			MediaDesc: sdpMediaDesc{
+			MediaDesc: SdpMediaDesc{
 				MediaType: []byte(nil),
 				Port:      []byte(nil),
 				Proto:     []byte(nil),
 				Fmt:       []byte(nil),
 				Src:       []byte(nil),
 			},
-			Attrib: []sdpAttrib{},
-			ConnData: sdpConnData{
+			Attrib: []SdpAttrib{},
+			ConnData: SdpConnData{
 				AddrType: []byte(nil),
 				ConnAddr: []byte(nil),
 				Src:      []byte(nil),
@@ -695,7 +695,7 @@ func Test_sipParse_302Test(t *testing.T) {
 	}
 }
 
-func (s sipReq) MarshalJSON() ([]byte, error) {
+func (s SipReq) MarshalJSON() ([]byte, error) {
 
 	return json.Marshal(&struct {
 		Method     string // Sip Method eg INVITE etc
@@ -720,7 +720,7 @@ func (s sipReq) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (s sipFrom) MarshalJSON() ([]byte, error) {
+func (s SipFrom) MarshalJSON() ([]byte, error) {
 
 	return json.Marshal(&struct {
 		UriType string   // Type of URI sip, sips, tel etc

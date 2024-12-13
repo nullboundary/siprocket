@@ -11,7 +11,7 @@ usage of the procedures in [4]).
 
 */
 
-type sipVia struct {
+type SipVia struct {
 	Trans  string // Type of Transport udp, tcp, tls, sctp etc
 	Host   []byte // Host part
 	Port   []byte // Port number
@@ -23,7 +23,7 @@ type sipVia struct {
 	Src    []byte // Full source if needed
 }
 
-func parseSipVia(v []byte, out *sipVia) {
+func parseSipVia(v []byte, out *SipVia) {
 
 	pos := 0
 	state := FIELD_BASE

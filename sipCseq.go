@@ -1,6 +1,5 @@
 package siprocket
 
-
 /*
  RFC 3261 - https://www.ietf.org/rfc/rfc3261.txt - 8.1.1.5 CSeq
 
@@ -14,13 +13,13 @@ package siprocket
 
 */
 
-type sipCseq struct {
+type SipCseq struct {
 	Id     []byte // Cseq ID
 	Method []byte // Cseq Method
 	Src    []byte // Full source if needed
 }
 
-func parseSipCseq(v []byte, out *sipCseq) {
+func parseSipCseq(v []byte, out *SipCseq) {
 
 	pos := 0
 	state := FIELD_ID

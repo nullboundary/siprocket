@@ -8,7 +8,7 @@ import (
 
 func Test_sipParseRequestLine_Nonsense(t *testing.T) {
 
-	var out sipReq
+	var out SipReq
 
 	msg := "asdf"
 
@@ -19,19 +19,19 @@ func Test_sipParseRequestLine_Nonsense(t *testing.T) {
 
 func Test_sipParse_RequestLine_REGISTER(t *testing.T) {
 
-	var out, exp sipReq
+	var out, exp SipReq
 
 	msg := "REGISTER sip:0800800140@test.com:5060 SIP"
-	exp = sipReq{
-		Method: 	[]byte("REGISTER"),
+	exp = SipReq{
+		Method:     []byte("REGISTER"),
 		UriType:    []byte("sip"),
 		StatusCode: []byte(nil),
 		StatusDesc: []byte(nil),
-		User:    	[]byte("0800800140"),
-		Host:  		[]byte("test.com"),
-		Port:     	[]byte("5060"),
+		User:       []byte("0800800140"),
+		Host:       []byte("test.com"),
+		Port:       []byte("5060"),
 		UserType:   []byte(nil),
-		Src: 		[]byte(msg),
+		Src:        []byte(msg),
 	}
 	if e := parseSipReq([]byte(msg), &out); e == nil {
 		eq := reflect.DeepEqual(out, exp)
@@ -68,19 +68,19 @@ func Test_sipParse_RequestLine_REGISTER(t *testing.T) {
 
 func Test_sipParse_RequestLine_INVITE(t *testing.T) {
 
-	var out, exp sipReq
+	var out, exp SipReq
 
 	msg := "INVITE sips:8508000123456;phone-context=+44@10.0.0.1;user=phone SIP/2.0"
-	exp = sipReq{
-		Method: 	[]byte("INVITE"),
+	exp = SipReq{
+		Method:     []byte("INVITE"),
 		UriType:    []byte("sips"),
 		StatusCode: []byte(nil),
 		StatusDesc: []byte(nil),
-		User:    	[]byte("8508000123456"),
-		Host:  		[]byte("10.0.0.1"),
-		Port:     	[]byte(nil),
+		User:       []byte("8508000123456"),
+		Host:       []byte("10.0.0.1"),
+		Port:       []byte(nil),
 		UserType:   []byte("phone"),
-		Src: 		[]byte(msg),
+		Src:        []byte(msg),
 	}
 	if e := parseSipReq([]byte(msg), &out); e == nil {
 		eq := reflect.DeepEqual(out, exp)

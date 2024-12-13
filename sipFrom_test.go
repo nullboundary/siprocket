@@ -8,7 +8,7 @@ import (
 
 func Test_sipParseFrom_Nonsense(t *testing.T) {
 
-	var out sipFrom
+	var out SipFrom
 
 	msg := "asdf"
 
@@ -19,10 +19,10 @@ func Test_sipParseFrom_Nonsense(t *testing.T) {
 
 func Test_sipParse_From_2(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := "Bob <sip:bob@test.com>;tag=a6c85cf"
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte("Bob"),
 		User:    []byte("bob"),
@@ -67,10 +67,10 @@ func Test_sipParse_From_2(t *testing.T) {
 
 func Test_sipParse_From_3(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := `"Board Room" <sip:phone_abc_123@test.com>;tag=ABCD-123-EFG`
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte("Board Room"),
 		User:    []byte("phone_abc_123"),
@@ -115,10 +115,10 @@ func Test_sipParse_From_3(t *testing.T) {
 
 func Test_sipParse_From_4(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := ` <sip:10.0.0.1:5060;transport=udp;lr>;tag=sip+654321`
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte(nil),
 		User:    []byte(nil),
@@ -166,10 +166,10 @@ func Test_sipParse_From_4(t *testing.T) {
 
 func Test_sipParse_From_5(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := `sip:10.0.0.1:5060`
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte(nil),
 		User:    []byte(nil),
@@ -214,10 +214,10 @@ func Test_sipParse_From_5(t *testing.T) {
 
 func Test_sipParse_From_6(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := `sip:unlimitedsystem.co.uk;tag=12345-6789-`
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte(nil),
 		User:    []byte(nil),
@@ -262,10 +262,10 @@ func Test_sipParse_From_6(t *testing.T) {
 
 func Test_sipParse_From_7(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := `sip:test.system@mydomain.co.uk`
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte(nil),
 		User:    []byte("test.system"),
@@ -310,10 +310,10 @@ func Test_sipParse_From_7(t *testing.T) {
 
 func Test_sipParse_From_8(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := ` <sip:+440800800150@10.0.0.1;user=phone>;tag=1234-4567`
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte(nil),
 		User:    []byte("+440800800150"),
@@ -360,10 +360,10 @@ func Test_sipParse_From_8(t *testing.T) {
 
 func Test_sipParse_From_9(t *testing.T) {
 
-	var out, exp sipFrom
+	var out, exp SipFrom
 
 	msg := `<sip:9876543521;phone-context=+44@10.0.0.1;user=phone>;tag=sip+6+a100+g333`
-	exp = sipFrom{
+	exp = SipFrom{
 		UriType: []byte("sip"),
 		Name:    []byte(nil),
 		User:    []byte("9876543521"),

@@ -30,7 +30,7 @@ Examples:
 	"display name" <user:password@host:port;uri-parameters>headers-parameters
 */
 
-type sipContact struct {
+type SipContact struct {
 	UriType []byte // Type of URI sip, sips, tel etc
 	Name    []byte // Named portion of URI
 	User    []byte // User part
@@ -42,7 +42,7 @@ type sipContact struct {
 	Src     []byte // Full source if needed
 }
 
-func parseSipContact(v []byte, out *sipContact) error {
+func parseSipContact(v []byte, out *SipContact) error {
 
 	var idx int
 
@@ -202,7 +202,7 @@ func parseSipContact(v []byte, out *sipContact) error {
 
 }
 
-func parseSipContactHeaderParams(v []byte, out *sipContact) {
+func parseSipContactHeaderParams(v []byte, out *SipContact) {
 	var idx int
 
 	for {

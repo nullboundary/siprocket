@@ -6,10 +6,10 @@ import (
 )
 
 // Parses a single line that is in the format of a to line, v
-// Also requires a pointer to a struct of type sipTo to write output to
+// Also requires a pointer to a struct of type SipTo to write output to
 // RFC 3261 - https://www.ietf.org/rfc/rfc3261.txt - 8.1.1.2 To
 
-type sipTo struct {
+type SipTo struct {
 	UriType []byte   // Type of URI sip, sips, tel etc
 	Name    []byte   // Named portion of URI
 	User    []byte   // User part
@@ -28,7 +28,7 @@ display name <user:password@host:port;uri-parameters>headers-parameters
 "display name" <user:password@host:port;uri-parameters>headers-parameters
 */
 
-func parseSipTo(v []byte, out *sipTo) error {
+func parseSipTo(v []byte, out *SipTo) error {
 
 	var idx int
 
@@ -135,18 +135,18 @@ func parseSipTo(v []byte, out *sipTo) error {
 			out.User = v[:idx]
 			v = v[idx+1:]
 		}
-		
+
 		// Trim of the password from the user section
 		if idx = bytes.IndexByte(out.User, byte(':')); idx > -1 {
 			out.User = out.User[:idx]
 		}
-		
+
 		// Apply fix for a non complient ua
 		if idx = bytes.IndexByte(out.User, byte(';')); idx > -1 {
 			out.Params = append(out.Params, out.User[idx+1:])
 			out.User = out.User[:idx]
 		}
-		
+
 		// In the non encapsulated the query form is possible
 		if idx = bytes.LastIndexByte(v, byte('?')); idx > -1 {
 			// parse header parameters
@@ -168,13 +168,13 @@ func parseSipTo(v []byte, out *sipTo) error {
 				v = v[:idx]
 			}
 		}
-		
+
 		// remote any port
 		if idx = bytes.IndexByte(v, byte(':')); idx > -1 {
 			out.Port = v[idx+1:]
 			v = v[:idx]
 		}
-		
+
 		// all that is left is the host
 		out.Host = v
 	}
@@ -182,7 +182,7 @@ func parseSipTo(v []byte, out *sipTo) error {
 	return nil
 }
 
-func parseSipToHeaderParams(v []byte, out *sipTo) {
+func parseSipToHeaderParams(v []byte, out *SipTo) {
 	var idx int
 
 	for {

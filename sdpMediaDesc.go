@@ -16,7 +16,7 @@ m=audio 24414 RTP/AVP 8 18 101
 
 */
 
-type sdpMediaDesc struct {
+type SdpMediaDesc struct {
 	MediaType []byte // Named portion of URI
 	Port      []byte // Port number
 	Proto     []byte // Protocol
@@ -24,7 +24,7 @@ type sdpMediaDesc struct {
 	Src       []byte // Full source if needed
 }
 
-func parseSdpMediaDesc(v []byte, out *sdpMediaDesc) {
+func parseSdpMediaDesc(v []byte, out *SdpMediaDesc) {
 
 	pos := 0
 	state := FIELD_MEDIA

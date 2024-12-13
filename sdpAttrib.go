@@ -23,13 +23,13 @@ package siprocket
 
 */
 
-type sdpAttrib struct {
+type SdpAttrib struct {
 	Cat []byte // Named portion of URI
 	Val []byte // Port number
 	Src []byte // Full source if needed
 }
 
-func parseSdpAttrib(v []byte, out *sdpAttrib) {
+func parseSdpAttrib(v []byte, out *SdpAttrib) {
 	pos := 0
 	state := FIELD_CAT
 

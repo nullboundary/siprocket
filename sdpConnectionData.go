@@ -10,14 +10,14 @@ RFC4566 - https://tools.ietf.org/html/rfc4566#section-5.7
   c=IN IP4 88.215.55.98
 */
 
-type sdpConnData struct {
+type SdpConnData struct {
 	//NetType   []byte // Network Type
 	AddrType []byte // Address Type
 	ConnAddr []byte // Connection Address
 	Src      []byte // Full source if needed
 }
 
-func parseSdpConnectionData(v []byte, out *sdpConnData) {
+func parseSdpConnectionData(v []byte, out *SdpConnData) {
 
 	pos := 0
 	state := FIELD_BASE
