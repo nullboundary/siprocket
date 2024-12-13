@@ -18,6 +18,7 @@ type SipMsg struct {
 	Cseq     SipCseq
 	Ua       SipVal
 	Exp      SipVal
+	Auth     SipVal
 	MaxFwd   SipVal
 	CallId   SipVal
 	ContType SipVal
@@ -100,6 +101,8 @@ func Parse(v []byte) (output SipMsg) {
 					output.MaxFwd.Src = lval
 				case lhdr == "cseq":
 					parseSipCseq(lval, &output.Cseq)
+				case lhdr == "authorization":
+					output.Auth.Value = lval
 				case lhdr == "x-gamma-public-ip":
 					output.XGammaIP.Value = lval
 					output.XGammaIP.Src = lval
@@ -234,7 +237,7 @@ func PrintSipStruct(data *SipMsg) {
 	fmt.Println("    [Q] =>", string(data.Contact.Qval))
 	fmt.Println("    [Expires] =>", string(data.Contact.Expires))
 	fmt.Println("    [Src] =>", string(data.Contact.Src))
-	// UA
+	// Cseq
 	fmt.Println("  [Cseq]")
 	fmt.Println("    [Id] =>", string(data.Cseq.Id))
 	fmt.Println("    [Method] =>", string(data.Cseq.Method))
@@ -247,6 +250,10 @@ func PrintSipStruct(data *SipMsg) {
 	fmt.Println("  [Expires]")
 	fmt.Println("    [Value] =>", string(data.Exp.Value))
 	fmt.Println("    [Src] =>", string(data.Exp.Src))
+	// Authorization
+	fmt.Println("  [Authorization]")
+	fmt.Println("    [Value] =>", string(data.Auth.Value))
+	fmt.Println("    [Src] =>", string(data.Auth.Src))
 	// MaxFwd
 	fmt.Println("  [Max Forwards]")
 	fmt.Println("    [Value] =>", string(data.MaxFwd.Value))
@@ -305,34 +312,51 @@ func PrintSipStruct(data *SipMsg) {
 
 }
 
-const FIELD_NULL = 0
-const FIELD_BASE = 1
-const FIELD_VALUE = 2
-const FIELD_NAME = 3
-const FIELD_NAMEQ = 4
-const FIELD_USER = 5
-const FIELD_HOST = 6
-const FIELD_PORT = 7
-const FIELD_TAG = 8
-const FIELD_ID = 9
-const FIELD_METHOD = 10
-const FIELD_TRAN = 11
-const FIELD_BRANCH = 12
-const FIELD_RPORT = 13
-const FIELD_MADDR = 14
-const FIELD_TTL = 15
-const FIELD_REC = 16
-const FIELD_EXPIRES = 17
-const FIELD_Q = 18
-const FIELD_USERTYPE = 19
-const FIELD_STATUS = 20
-const FIELD_STATUSDESC = 21
+const (
+	FIELD_NULL = iota
+	FIELD_BASE
+	FIELD_VALUE
+	FIELD_NAME
+	FIELD_NAMEQ
+	FIELD_USER
+	FIELD_HOST
+	FIELD_PORT
+	FIELD_TAG
+	FIELD_ID
+	FIELD_METHOD
+	FIELD_TRAN
+	FIELD_BRANCH
+	FIELD_RPORT
+	FIELD_MADDR
+	FIELD_TTL
+	FIELD_REC
+	FIELD_EXPIRES
+	FIELD_Q
+	FIELD_USERTYPE
+	FIELD_STATUS
+	FIELD_STATUSDESC
 
-const FIELD_ADDRTYPE = 40
-const FIELD_CONNADDR = 41
-const FIELD_MEDIA = 42
-const FIELD_PROTO = 43
-const FIELD_FMT = 44
-const FIELD_CAT = 45
+	FIELD_DIGEST
+	FIELD_REALM
+	FIELD_DOMAIN
+	FIELD_QOP
+	FIELD_NONCE
+	FIELD_OPAQUE
+	FIELD_STALE
+	FIELD_ALGORITHM
 
-const FIELD_IGNORE = 255
+	FIELD_USERNAME
+	FIELD_URI
+	FIELD_RESPONSE
+	FIELD_NC
+	FIELD_CNONCE
+
+	FIELD_ADDRTYPE
+	FIELD_CONNADDR
+	FIELD_MEDIA
+	FIELD_PROTO
+	FIELD_FMT
+	FIELD_CAT
+
+	FIELD_IGNORE = 255
+)

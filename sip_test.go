@@ -68,6 +68,10 @@ func Test_sipParse_Nonsense(t *testing.T) {
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
+		Auth: SipVal{
+			Value: []byte(nil),
+			Src:   []byte(nil),
+		},
 		MaxFwd: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
