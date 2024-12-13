@@ -103,6 +103,7 @@ func Parse(v []byte) (output SipMsg) {
 					parseSipCseq(lval, &output.Cseq)
 				case lhdr == "authorization":
 					output.Auth.Value = lval
+					output.Auth.Src = lval
 				case lhdr == "x-gamma-public-ip":
 					output.XGammaIP.Value = lval
 					output.XGammaIP.Src = lval

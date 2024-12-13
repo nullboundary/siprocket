@@ -115,7 +115,7 @@ func Test_sipParse_Nonsense(t *testing.T) {
 	if !eq {
 		exp, _ := json.MarshalIndent(exp, "", "  ")
 		out, _ := json.MarshalIndent(out, "", "  ")
-		t.Errorf("\n%s \n %s", exp, out)
+		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
 
@@ -205,7 +205,7 @@ a=rtpmap:9 G722/8000`
 		},
 		Ua: SipVal{
 			Value: []byte("softphone-desktop"),
-			Src:   []byte(nil),
+			Src:   []byte("softphone-desktop"),
 		},
 		Exp: SipVal{
 			Value: []byte(nil),
@@ -213,23 +213,23 @@ a=rtpmap:9 G722/8000`
 		},
 		MaxFwd: SipVal{
 			Value: []byte("69"),
-			Src:   []byte(nil),
+			Src:   []byte("69"),
 		},
 		CallId: SipVal{
 			Value: []byte("kasdf023l4qklaansdf02"),
-			Src:   []byte(nil),
+			Src:   []byte("kasdf023l4qklaansdf02"),
 		},
 		ContType: SipVal{
 			Value: []byte("application/sdp"),
-			Src:   []byte(nil),
+			Src:   []byte("application/sdp"),
 		},
 		ContLen: SipVal{
 			Value: []byte("1245"),
-			Src:   []byte(nil),
+			Src:   []byte("1245"),
 		},
 		XGammaIP: SipVal{
 			Value: []byte("127.0.0.1"),
-			Src:   []byte(nil),
+			Src:   []byte("127.0.0.1"),
 		},
 		Sdp: SdpMsg{
 			MediaDesc: SdpMediaDesc{
@@ -261,9 +261,9 @@ a=rtpmap:9 G722/8000`
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		exp, _ := json.MarshalIndent(exp, "", "  ")
-		out, _ := json.MarshalIndent(out, "", "  ")
-		t.Errorf("\n%s \n %s", exp, out)
+		// exp, _ := json.MarshalIndent(exp, "", "  ")
+		// out, _ := json.MarshalIndent(out, "", "  ")
+		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
 
@@ -376,19 +376,19 @@ a=ptime:20`
 		},
 		MaxFwd: SipVal{
 			Value: []byte("69"),
-			Src:   []byte(nil),
+			Src:   []byte("69"),
 		},
 		CallId: SipVal{
 			Value: []byte("20230069-123456789-2021222324@server1.mycompany.com"),
-			Src:   []byte(nil),
+			Src:   []byte("20230069-123456789-2021222324@server1.mycompany.com"),
 		},
 		ContType: SipVal{
 			Value: []byte("application/sdp"),
-			Src:   []byte(nil),
+			Src:   []byte("application/sdp"),
 		},
 		ContLen: SipVal{
 			Value: []byte("250"),
-			Src:   []byte(nil),
+			Src:   []byte("250"),
 		},
 		XGammaIP: SipVal{
 			Value: []byte(nil),
@@ -444,9 +444,9 @@ a=ptime:20`
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		exp, _ := json.MarshalIndent(exp, "", "  ")
-		out, _ := json.MarshalIndent(out, "", "  ")
-		t.Errorf("\n%s \n %s", exp, out)
+		// exp, _ := json.MarshalIndent(exp, "", "  ")
+		// out, _ := json.MarshalIndent(out, "", "  ")
+		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
 
@@ -470,82 +470,88 @@ func Test_sipParse_GenericTest(t *testing.T) {
 	`
 	exp = SipMsg{
 		Req: SipReq{
-			Method:     []byte(nil),
-			UriType:    []byte(nil),
+			Method:     []byte("INVITE"),
+			UriType:    []byte("sip"),
 			StatusCode: []byte(nil),
 			StatusDesc: []byte(nil),
-			User:       []byte(nil),
-			Host:       []byte(nil),
-			Port:       []byte(nil),
-			UserType:   []byte(nil),
-			Src:        []byte(nil),
+			User:       []byte("8660000101304799968"),
+			Host:       []byte("10.120.38.17"),
+			Port:       []byte("5060"),
+			UserType:   []byte("phone"),
+			Src:        []byte("INVITE sip:8660000101304799968;phone-context=+44@10.120.38.17:5060;user=phone SIP/2.0"),
 		},
 		From: SipFrom{
-			UriType: []byte(nil),
+			UriType: []byte("sip"),
 			Name:    []byte(nil),
-			User:    []byte(nil),
-			Host:    []byte(nil),
+			User:    []byte("+441304380808"),
+			Host:    []byte("10.123.128.137"),
 			Port:    []byte(nil),
-			Params:  [][]byte(nil),
-			Tag:     []byte(nil),
-			Src:     []byte(nil),
+			Params:  [][]byte{[]byte("user=phone")},
+			Tag:     []byte("14906060"),
+			Src:     []byte("<sip:+441304380808@10.123.128.137;user=phone>;tag=14906060"),
 		},
 		To: SipTo{
-			UriType: []byte(nil),
+			UriType: []byte("sip"),
 			Name:    []byte(nil),
-			User:    []byte(nil),
-			Host:    []byte(nil),
+			User:    []byte("8660000101304799968"),
+			Host:    []byte("10.120.38.17"),
 			Port:    []byte(nil),
-			Params:  [][]byte(nil),
+			Params:  [][]byte{[]byte("phone-context=+44"), []byte("user=phone")},
 			Tag:     []byte(nil),
-			Src:     []byte(nil),
+			Src:     []byte("<sip:8660000101304799968;phone-context=+44@10.120.38.17;user=phone>"),
 		},
 		Contact: SipContact{
-			UriType: []byte(nil),
+			UriType: []byte("sip"),
 			Name:    []byte(nil),
-			User:    []byte(nil),
-			Host:    []byte(nil),
-			Port:    []byte(nil),
+			User:    []byte("+441304380808"),
+			Host:    []byte("10.123.128.137"),
+			Port:    []byte("5060"),
 			Tran:    []byte(nil),
-			Qval:    []byte(nil),
 			Expires: []byte(nil),
-			Src:     []byte(nil),
+			Src:     []byte("<sip:+441304380808;tgrp=PST_IB2_B2BUA_04_01;trunk-context=hex-mgc-01.gamma.uktel.org.uk@10.123.128.137:5060;user=phone>"),
 		},
-		Via: []SipVia{},
+		Via: []SipVia{
+			{
+				Trans:  "udp",
+				Host:   []byte("10.123.128.137"),
+				Port:   []byte("5060"),
+				Branch: []byte("z9hG4bK-60c7c042-3-803569663"),
+				Src:    []byte("SIP/2.0/UDP 10.123.128.137:5060;branch=z9hG4bK-60c7c042-3-803569663"),
+			},
+		},
 		Cseq: SipCseq{
-			Id:     []byte(nil),
-			Method: []byte(nil),
-			Src:    []byte(nil),
+			Id:     []byte("1"),
+			Method: []byte("INVITE"),
+			Src:    []byte("1 INVITE"),
 		},
 		Ua: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
 		Exp: SipVal{
-			Value: []byte(nil),
-			Src:   []byte(nil),
+			Value: []byte("330"),
+			Src:   []byte("330"),
 		},
 		MaxFwd: SipVal{
-			Value: []byte(nil),
-			Src:   []byte(nil),
+			Value: []byte("70"),
+			Src:   []byte("70"),
 		},
 		CallId: SipVal{
-			Value: []byte(nil),
-			Src:   []byte(nil),
+			Value: []byte("1623703618-524272678@3"),
+			Src:   []byte("1623703618-524272678@3"),
 		},
 		ContType: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
 		ContLen: SipVal{
-			Value: []byte(nil),
-			Src:   []byte(nil),
+			Value: []byte("0"),
+			Src:   []byte("0"),
 		},
 		XGammaIP: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-
 		Sdp: SdpMsg{
 			MediaDesc: SdpMediaDesc{
 				MediaType: []byte(nil),
@@ -565,9 +571,9 @@ func Test_sipParse_GenericTest(t *testing.T) {
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		exp, _ := json.MarshalIndent(exp, "", "  ")
-		out, _ := json.MarshalIndent(out, "", "  ")
-		t.Errorf("\n%s \n %s", exp, out)
+		// exp, _ := json.MarshalIndent(exp, "", "  ")
+		// out, _ := json.MarshalIndent(out, "", "  ")
+		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
 
@@ -589,7 +595,7 @@ func Test_sipParse_302Test(t *testing.T) {
 			Method:     []byte(nil),
 			UriType:    []byte(nil),
 			StatusCode: []byte("302"),
-			StatusDesc: []byte("Moved Temporarily"),
+			StatusDesc: []byte("Moved temporarily"),
 			User:       []byte(nil),
 			Host:       []byte(nil),
 			Port:       []byte(nil),
@@ -693,9 +699,143 @@ func Test_sipParse_302Test(t *testing.T) {
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		exp, _ := json.MarshalIndent(exp, "", "  ")
-		out, _ := json.MarshalIndent(out, "", "  ")
-		t.Errorf("\n%s \n %s", exp, out)
+		// exp, _ := json.MarshalIndent(exp, "", "  ")
+		// out, _ := json.MarshalIndent(out, "", "  ")
+		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
+	}
+}
+
+func Test_sipParse_AuthTest(t *testing.T) {
+
+	var out, exp SipMsg
+
+	msg := `REGISTER sip:127.0.0.1 SIP/2.0
+	Via: SIP/2.0/UDP 127.0.0.1:65223;rport;branch=z9hG4bKPjHathatTav6jR5ACPe7Ab-PkpHiNfno21
+	Max-Forwards: 70
+	From: "bob" <sip:bob@127.0.0.1>;tag=kMql7AuzTfBakV9lw99afTj1kFk2aMqU
+	To: "bob" <sip:bob@127.0.0.1>
+	Call-ID: 8U1evs7JtnhJDYRlRvDBcouvJiNod4CT
+	CSeq: 6643 REGISTER
+	User-Agent: Telephone 1.6
+	Contact: "bob" <sip:bob@127.0.0.1:65223;ob>
+	Expires: 300
+	Authorization: Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5
+	Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+	Content-Length:  0
+	`
+	exp = SipMsg{
+		Req: SipReq{
+			Method:     []byte("REGISTER"),
+			UriType:    []byte("sip"),
+			StatusCode: []byte(nil),
+			StatusDesc: []byte(nil),
+			User:       []byte(nil),
+			Host:       []byte("127.0.0.1"),
+			Port:       []byte(nil),
+			UserType:   []byte(nil),
+			Src:        []byte("REGISTER sip:127.0.0.1 SIP/2.0"),
+		},
+		From: SipFrom{
+			UriType: []byte("sip"),
+			Name:    []byte("bob"),
+			User:    []byte("bob"),
+			Host:    []byte("127.0.0.1"),
+			Port:    []byte(nil),
+			Params:  [][]byte(nil),
+			Tag:     []byte("kMql7AuzTfBakV9lw99afTj1kFk2aMqU"),
+			Src:     []byte(`"bob" <sip:bob@127.0.0.1>;tag=kMql7AuzTfBakV9lw99afTj1kFk2aMqU`),
+		},
+		To: SipTo{
+			UriType: []byte("sip"),
+			Name:    []byte("bob"),
+			User:    []byte("bob"),
+			Host:    []byte("127.0.0.1"),
+			Port:    []byte(nil),
+			Params:  [][]byte(nil),
+			Tag:     []byte(nil),
+			Src:     []byte(`"bob" <sip:bob@127.0.0.1>`),
+		},
+		Contact: SipContact{
+			UriType: []byte("sip"),
+			Name:    []byte("bob"),
+			User:    []byte("bob"),
+			Host:    []byte("127.0.0.1"),
+			Port:    []byte("65223"),
+			Tran:    []byte(nil),
+			// Qval:    [][]byte{[]byte("ob")},
+			Expires: []byte(nil),
+			Src:     []byte(`"bob" <sip:bob@127.0.0.1:65223;ob>`),
+		},
+		Via: []SipVia{
+			{
+				Trans:  "udp",
+				Host:   []byte("127.0.0.1"),
+				Port:   []byte("65223"),
+				Branch: []byte("z9hG4bKPjHathatTav6jR5ACPe7Ab-PkpHiNfno21"),
+				Rport:  []byte(nil),
+				Src:    []byte("SIP/2.0/UDP 127.0.0.1:65223;rport;branch=z9hG4bKPjHathatTav6jR5ACPe7Ab-PkpHiNfno21"),
+			},
+		},
+		Cseq: SipCseq{
+			Id:     []byte("6643"),
+			Method: []byte("REGISTER"),
+			Src:    []byte("6643 REGISTER"),
+		},
+		Ua: SipVal{
+			Value: []byte("Telephone 1.6"),
+			Src:   []byte("Telephone 1.6"),
+		},
+		Exp: SipVal{
+			Value: []byte("300"),
+			Src:   []byte("300"),
+		},
+		Auth: SipVal{
+			Value: []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
+			Src:   []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
+		},
+		MaxFwd: SipVal{
+			Value: []byte("70"),
+			Src:   []byte("70"),
+		},
+		CallId: SipVal{
+			Value: []byte("8U1evs7JtnhJDYRlRvDBcouvJiNod4CT"),
+			Src:   []byte("8U1evs7JtnhJDYRlRvDBcouvJiNod4CT"),
+		},
+		ContType: SipVal{
+			Value: []byte(nil),
+			Src:   []byte(nil),
+		},
+		ContLen: SipVal{
+			Value: []byte("0"),
+			Src:   []byte("0"),
+		},
+		XGammaIP: SipVal{
+			Value: []byte(nil),
+			Src:   []byte(nil),
+		},
+		Sdp: SdpMsg{
+			MediaDesc: SdpMediaDesc{
+				MediaType: []byte(nil),
+				Port:      []byte(nil),
+				Proto:     []byte(nil),
+				Fmt:       []byte(nil),
+				Src:       []byte(nil),
+			},
+			Attrib: []SdpAttrib{},
+			ConnData: SdpConnData{
+				AddrType: []byte(nil),
+				ConnAddr: []byte(nil),
+				Src:      []byte(nil),
+			},
+		},
+	}
+
+	out = Parse([]byte(msg))
+	eq := reflect.DeepEqual(out, exp)
+	if !eq {
+		// exp, _ := json.MarshalIndent(exp, "", "  ")
+		// out, _ := json.MarshalIndent(out, "", "  ")
+		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
 
