@@ -19,6 +19,7 @@ type SipMsg struct {
 	Ua       SipVal
 	Exp      SipVal
 	Auth     SipVal
+	Allow    SipVal
 	MaxFwd   SipVal
 	CallId   SipVal
 	ContType SipVal
@@ -37,6 +38,10 @@ type SdpMsg struct {
 type SipVal struct {
 	Value []byte // Sip Value
 	Src   []byte // Full source if needed
+}
+
+func Unmarshal(v []byte) (SipMsg, error) {
+	return Parse(v), nil
 }
 
 // Main parsing routine, passes by value
@@ -104,6 +109,9 @@ func Parse(v []byte) (output SipMsg) {
 				case lhdr == "authorization":
 					output.Auth.Value = lval
 					output.Auth.Src = lval
+				case lhdr == "allow":
+					output.Allow.Value = lval
+					output.Allow.Src = lval
 				case lhdr == "x-gamma-public-ip":
 					output.XGammaIP.Value = lval
 					output.XGammaIP.Src = lval

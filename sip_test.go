@@ -68,6 +68,10 @@ func Test_sipParse_Nonsense(t *testing.T) {
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
+		Allow: SipVal{
+			Value: []byte(nil),
+			Src:   []byte(nil),
+		},
 		Auth: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
@@ -223,6 +227,10 @@ a=rtpmap:9 G722/8000`
 			Value: []byte("application/sdp"),
 			Src:   []byte("application/sdp"),
 		},
+		Allow: SipVal{
+			Value: []byte("INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY"),
+			Src:   []byte("INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY"),
+		},
 		ContLen: SipVal{
 			Value: []byte("1245"),
 			Src:   []byte("1245"),
@@ -366,6 +374,10 @@ a=ptime:20`
 			Method: []byte("INVITE"),
 			Src:    []byte("1 INVITE"),
 		},
+		Allow: SipVal{
+			Value: []byte("UPDATE,PRACK,INFO,NOTIFY,REGISTER,OPTIONS,BYE,INVITE,ACK,CANCEL"),
+			Src:   []byte("UPDATE,PRACK,INFO,NOTIFY,REGISTER,OPTIONS,BYE,INVITE,ACK,CANCEL"),
+		},
 		Ua: SipVal{
 			Value: []byte(nil),
 			Src:   []byte(nil),
@@ -444,8 +456,6 @@ a=ptime:20`
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		// exp, _ := json.MarshalIndent(exp, "", "  ")
-		// out, _ := json.MarshalIndent(out, "", "  ")
 		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
@@ -531,6 +541,10 @@ func Test_sipParse_GenericTest(t *testing.T) {
 		Exp: SipVal{
 			Value: []byte("330"),
 			Src:   []byte("330"),
+		},
+		Allow: SipVal{
+			Value: []byte("INVITE, ACK, BYE, CANCEL, INFO, PRACK, REFER, SUBSCRIBE, NOTIFY, UPDATE"),
+			Src:   []byte("INVITE, ACK, BYE, CANCEL, INFO, PRACK, REFER, SUBSCRIBE, NOTIFY, UPDATE"),
 		},
 		MaxFwd: SipVal{
 			Value: []byte("70"),
@@ -699,8 +713,6 @@ func Test_sipParse_302Test(t *testing.T) {
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		// exp, _ := json.MarshalIndent(exp, "", "  ")
-		// out, _ := json.MarshalIndent(out, "", "  ")
 		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
@@ -789,6 +801,10 @@ func Test_sipParse_AuthTest(t *testing.T) {
 			Value: []byte("300"),
 			Src:   []byte("300"),
 		},
+		Allow: SipVal{
+			Value: []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
+			Src:   []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
+		},
 		Auth: SipVal{
 			Value: []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
 			Src:   []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
@@ -833,8 +849,6 @@ func Test_sipParse_AuthTest(t *testing.T) {
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		// exp, _ := json.MarshalIndent(exp, "", "  ")
-		// out, _ := json.MarshalIndent(out, "", "  ")
 		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
