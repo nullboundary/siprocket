@@ -72,17 +72,33 @@ func writeViaHeaders(sb *strings.Builder, data *SipMsg) {
 
 // writeFromHeader writes the From header to the string builder
 func writeFromHeader(sb *strings.Builder, data *SipMsg) {
-	fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>;tag=%s%s", HEADER_FROM, data.From.User, data.From.User, data.From.Host, data.From.Tag, ENDL)
+	if data.From.Tag != nil {
+		if len(data.From.Tag) > 0 {
+			fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>;tag=%s%s", HEADER_FROM, data.From.User, data.From.User, data.From.Host, data.From.Tag, ENDL)
+		} else {
+			fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>;tag=%s", HEADER_FROM, data.From.User, data.From.User, data.From.Host, ENDL)
+		}
+	} else {
+		fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>%s", HEADER_FROM, data.From.User, data.From.User, data.From.Host, ENDL)
+	}
 }
 
 // writeToHeader writes the To header to the string builder
 func writeToHeader(sb *strings.Builder, data *SipMsg) {
-	fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>%s", HEADER_TO, data.To.User, data.To.User, data.To.Host, ENDL)
+	if data.To.Tag != nil {
+		if len(data.To.Tag) > 0 {
+			fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>;tag=%s%s", HEADER_TO, data.To.User, data.To.User, data.To.Host, data.To.Tag, ENDL)
+		} else {
+			fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>;tag=%s", HEADER_TO, data.To.User, data.To.User, data.To.Host, ENDL)
+		}
+	} else {
+		fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s>%s", HEADER_TO, data.To.User, data.To.User, data.To.Host, ENDL)
+	}
 }
 
 // writeContactHeader writes the Contact header to the string builder
 func writeContactHeader(sb *strings.Builder, data *SipMsg) {
-	if data.Contact.Tran != nil {
+	if string(data.Contact.Tran) != "" {
 		fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s:%s;transport=%s>%s", HEADER_CONTACT, data.Contact.User, data.Contact.User, data.Contact.Host, data.Contact.Port, data.Contact.Tran, ENDL)
 	} else {
 		fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s:%s", HEADER_CONTACT, data.Contact.User, data.Contact.User, data.Contact.Host, data.Contact.Port)
@@ -171,6 +187,25 @@ func writeSdpBody(sdp *SdpMsg) string {
 	var sb strings.Builder
 	sb.Grow(256) // Pre-allocate memory for the string builder
 
+	// Write Protocol Version
+	if sdp.Version != nil {
+		fmt.Fprintf(&sb, "v=%s%s", sdp.Version, ENDL)
+	}
+
+	// Write Origin
+	if sdp.Origin != nil {
+		fmt.Fprintf(&sb, "o=%s%s", sdp.Origin, ENDL)
+	}
+
+	// Write Session Name
+	if sdp.Session != nil {
+		fmt.Fprintf(&sb, "s=%s%s", sdp.Session, ENDL)
+	}
+
+	if sdp.Timing != nil {
+		fmt.Fprintf(&sb, "t=%s%s", sdp.Timing, ENDL)
+	}
+
 	// Write Media Description
 	if sdp.MediaDesc.MediaType != nil {
 		fmt.Fprintf(&sb, "m=%s %s %s %s%s", sdp.MediaDesc.MediaType, sdp.MediaDesc.Port, sdp.MediaDesc.Proto, sdp.MediaDesc.Fmt, ENDL)
@@ -178,11 +213,15 @@ func writeSdpBody(sdp *SdpMsg) string {
 
 	// Write Connection Data
 	if sdp.ConnData.AddrType != nil {
-		fmt.Fprintf(&sb, "c=IN %s %s%s", sdp.ConnData.AddrType, sdp.ConnData.ConnAddr, ENDL)
+		fmt.Fprintf(&sb, "c=%s %s%s", sdp.ConnData.AddrType, sdp.ConnData.ConnAddr, ENDL)
 	}
 
 	// Write Attributes
 	for _, attr := range sdp.Attrib {
+		if string(attr.Val) == "" {
+			fmt.Fprintf(&sb, "a=%s%s", attr.Cat, ENDL)
+			continue
+		}
 		fmt.Fprintf(&sb, "a=%s:%s%s", attr.Cat, attr.Val, ENDL)
 	}
 

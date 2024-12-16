@@ -23,6 +23,17 @@ type SipVia struct {
 	Src    []byte // Full source if needed
 }
 
+func NewSipVia(trans, host, port, branch, rport, src string) SipVia {
+	return SipVia{
+		Trans:  trans,
+		Host:   []byte(host),
+		Port:   []byte(port),
+		Branch: []byte(branch),
+		Rport:  []byte(rport),
+		Src:    []byte(src),
+	}
+}
+
 func parseSipVia(v []byte, out *SipVia) {
 
 	pos := 0

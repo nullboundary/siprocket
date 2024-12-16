@@ -908,3 +908,27 @@ func custConv(oldArr [][]byte) (newArr []string) {
 	}
 	return
 }
+
+func BenchmarkParse(b *testing.B) {
+	sipMessage := []byte(`REGISTER sip:127.0.0.1 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:65223;rport;branch=z9hG4bKPjHathatTav6jR5ACPe7Ab-PkpHiNfno21
+From: "bob" <sip:bob@127.0.0.1>;tag=kMql7AuzTfBakV9lw99afTj1kFk2aMqU
+To: "bob" <sip:bob@127.0.0.1>
+Contact: "bob" <sip:bob@127.0.0.1:65223;ob>
+Call-ID: 8U1evs7JtnhJDYRlRvDBcouvJiNod4CT
+CSeq: 6643 REGISTER
+Max-Forwards: 70
+User-Agent: Telephone 1.6
+Expires: 300
+Authorization: Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5
+Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+Content-Length: 0
+
+`)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_ = Parse(sipMessage)
+	}
+}

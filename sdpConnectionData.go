@@ -17,6 +17,15 @@ type SdpConnData struct {
 	Src      []byte // Full source if needed
 }
 
+func NewSdpConnData(addrType, connAddr, src string) SdpConnData {
+	return SdpConnData{
+		//NetType:   []byte(netType),
+		AddrType: []byte(addrType),
+		ConnAddr: []byte(connAddr),
+		Src:      []byte(src),
+	}
+}
+
 func parseSdpConnectionData(v []byte, out *SdpConnData) {
 
 	pos := 0

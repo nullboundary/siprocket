@@ -19,6 +19,14 @@ type SipCseq struct {
 	Src    []byte // Full source if needed
 }
 
+func NewSipCseq(id, method, src string) SipCseq {
+	return SipCseq{
+		Id:     []byte(id),
+		Method: []byte(method),
+		Src:    []byte(src),
+	}
+}
+
 func parseSipCseq(v []byte, out *SipCseq) {
 
 	pos := 0

@@ -29,6 +29,14 @@ type SdpAttrib struct {
 	Src []byte // Full source if needed
 }
 
+func NewSdpAttrib(cat, val, src string) SdpAttrib {
+	return SdpAttrib{
+		Cat: []byte(cat),
+		Val: []byte(val),
+		Src: []byte(src),
+	}
+}
+
 func parseSdpAttrib(v []byte, out *SdpAttrib) {
 	pos := 0
 	state := FIELD_CAT

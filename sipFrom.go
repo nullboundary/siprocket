@@ -24,6 +24,18 @@ type SipFrom struct {
 	Src     []byte   // Full source if needed
 }
 
+func NewSipFrom(uriType, name, user, host, port, tag, src string) SipFrom {
+	return SipFrom{
+		UriType: []byte(uriType),
+		Name:    []byte(name),
+		User:    []byte(user),
+		Host:    []byte(host),
+		Port:    []byte(port),
+		Tag:     []byte(tag),
+		Src:     []byte(src),
+	}
+}
+
 /* Examples
 sip:user:password@host:port;header-parameters
 sip:user:password@host:port;uri-parameters?headers-parameters

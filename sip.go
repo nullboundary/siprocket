@@ -30,6 +30,10 @@ type SipMsg struct {
 }
 
 type SdpMsg struct {
+	Version   []byte
+	Origin    []byte
+	Session   []byte
+	Timing    []byte
 	MediaDesc SdpMediaDesc
 	Attrib    []SdpAttrib
 	ConnData  SdpConnData
@@ -38,6 +42,13 @@ type SdpMsg struct {
 type SipVal struct {
 	Value []byte // Sip Value
 	Src   []byte // Full source if needed
+}
+
+func NewSipVal(val, src string) SipVal {
+	return SipVal{
+		Value: []byte(val),
+		Src:   []byte(src),
+	}
 }
 
 func Unmarshal(v []byte) (SipMsg, error) {
@@ -124,6 +135,14 @@ func Parse(v []byte) (output SipMsg) {
 				// Switch on the line header
 				//fmt.Println(i, spos, string(lhdr), string(lval))
 				switch {
+				case lhdr == "v":
+					output.Sdp.Version = lval
+				case lhdr == "o":
+					output.Sdp.Origin = lval
+				case lhdr == "s":
+					output.Sdp.Session = lval
+				case lhdr == "t":
+					output.Sdp.Timing = lval
 				case lhdr == "m":
 					parseSdpMediaDesc(lval, &output.Sdp.MediaDesc)
 				case lhdr == "c":

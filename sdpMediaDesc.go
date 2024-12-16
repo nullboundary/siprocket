@@ -24,6 +24,16 @@ type SdpMediaDesc struct {
 	Src       []byte // Full source if needed
 }
 
+func NewSdpMediaDesc(mediaType, port, proto, fmt, src string) SdpMediaDesc {
+	return SdpMediaDesc{
+		MediaType: []byte(mediaType),
+		Port:      []byte(port),
+		Proto:     []byte(proto),
+		Fmt:       []byte(fmt),
+		Src:       []byte(src),
+	}
+}
+
 func parseSdpMediaDesc(v []byte, out *SdpMediaDesc) {
 
 	pos := 0

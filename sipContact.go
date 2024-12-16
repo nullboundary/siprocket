@@ -42,6 +42,20 @@ type SipContact struct {
 	Src     []byte // Full source if needed
 }
 
+func NewSipContact(uriType, name, user, host, port, tran, qval, expires, src string) SipContact {
+	return SipContact{
+		UriType: []byte(uriType),
+		Name:    []byte(name),
+		User:    []byte(user),
+		Host:    []byte(host),
+		Port:    []byte(port),
+		Tran:    []byte(tran),
+		Qval:    []byte(qval),
+		Expires: []byte(expires),
+		Src:     []byte(src),
+	}
+}
+
 func parseSipContact(v []byte, out *SipContact) error {
 
 	var idx int
