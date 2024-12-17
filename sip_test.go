@@ -68,13 +68,20 @@ func Test_sipParse_Nonsense(t *testing.T) {
 			Value: []byte(nil),
 			Src:   []byte(nil),
 		},
-		Allow: SipVal{
-			Value: []byte(nil),
-			Src:   []byte(nil),
+		Allow: SipAllow{
+			Methods: [][]byte(nil),
 		},
-		Auth: SipVal{
-			Value: []byte(nil),
-			Src:   []byte(nil),
+		Auth: SipAuth{
+			Digest:    []byte(nil),
+			Username:  []byte(nil),
+			Realm:     []byte(nil),
+			Nonce:     []byte(nil),
+			Uri:       []byte(nil),
+			Qop:       []byte(nil),
+			Nc:        []byte(nil),
+			Cnonce:    []byte(nil),
+			Response:  []byte(nil),
+			Algorithm: []byte(nil),
 		},
 		MaxFwd: SipVal{
 			Value: []byte(nil),
@@ -227,9 +234,9 @@ a=rtpmap:9 G722/8000`
 			Value: []byte("application/sdp"),
 			Src:   []byte("application/sdp"),
 		},
-		Allow: SipVal{
-			Value: []byte("INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY"),
-			Src:   []byte("INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY"),
+		Allow: SipAllow{
+			Methods: [][]byte{[]byte("INVITE"), []byte("ACK"), []byte("CANCEL"), []byte("BYE"), []byte("UPDATE"), []byte("MESSAGE"), []byte("OPTIONS"), []byte("REFER"), []byte("INFO"), []byte("NOTIFY")},
+			Src:     []byte("INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY"),
 		},
 		ContLen: SipVal{
 			Value: []byte("1245"),
@@ -269,8 +276,6 @@ a=rtpmap:9 G722/8000`
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		// exp, _ := json.MarshalIndent(exp, "", "  ")
-		// out, _ := json.MarshalIndent(out, "", "  ")
 		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
@@ -374,9 +379,9 @@ a=ptime:20`
 			Method: []byte("INVITE"),
 			Src:    []byte("1 INVITE"),
 		},
-		Allow: SipVal{
-			Value: []byte("UPDATE,PRACK,INFO,NOTIFY,REGISTER,OPTIONS,BYE,INVITE,ACK,CANCEL"),
-			Src:   []byte("UPDATE,PRACK,INFO,NOTIFY,REGISTER,OPTIONS,BYE,INVITE,ACK,CANCEL"),
+		Allow: SipAllow{
+			Methods: [][]byte{[]byte("UPDATE"), []byte("PRACK"), []byte("INFO"), []byte("NOTIFY"), []byte("REGISTER"), []byte("OPTIONS"), []byte("BYE"), []byte("INVITE"), []byte("ACK"), []byte("CANCEL")},
+			Src:     []byte("UPDATE,PRACK,INFO,NOTIFY,REGISTER,OPTIONS,BYE,INVITE,ACK,CANCEL"),
 		},
 		Ua: SipVal{
 			Value: []byte(nil),
@@ -407,6 +412,10 @@ a=ptime:20`
 			Src:   []byte(nil),
 		},
 		Sdp: SdpMsg{
+			Version: []byte("0"),
+			Origin:  []byte("server1 3487 929 IN IP4 10.0.0.2"),
+			Session: []byte("sip call"),
+			Timing:  []byte("0 0"),
 			MediaDesc: SdpMediaDesc{
 				MediaType: []byte("audio"),
 				Port:      []byte("11484"),
@@ -542,9 +551,9 @@ func Test_sipParse_GenericTest(t *testing.T) {
 			Value: []byte("330"),
 			Src:   []byte("330"),
 		},
-		Allow: SipVal{
-			Value: []byte("INVITE, ACK, BYE, CANCEL, INFO, PRACK, REFER, SUBSCRIBE, NOTIFY, UPDATE"),
-			Src:   []byte("INVITE, ACK, BYE, CANCEL, INFO, PRACK, REFER, SUBSCRIBE, NOTIFY, UPDATE"),
+		Allow: SipAllow{
+			Methods: [][]byte{[]byte("INVITE"), []byte("ACK"), []byte("BYE"), []byte("CANCEL"), []byte("INFO"), []byte("PRACK"), []byte("REFER"), []byte("SUBSCRIBE"), []byte("NOTIFY"), []byte("UPDATE")},
+			Src:     []byte("INVITE, ACK, BYE, CANCEL, INFO, PRACK, REFER, SUBSCRIBE, NOTIFY, UPDATE"),
 		},
 		MaxFwd: SipVal{
 			Value: []byte("70"),
@@ -585,8 +594,6 @@ func Test_sipParse_GenericTest(t *testing.T) {
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		// exp, _ := json.MarshalIndent(exp, "", "  ")
-		// out, _ := json.MarshalIndent(out, "", "  ")
 		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
 }
@@ -801,13 +808,22 @@ func Test_sipParse_AuthTest(t *testing.T) {
 			Value: []byte("300"),
 			Src:   []byte("300"),
 		},
-		Allow: SipVal{
-			Value: []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
-			Src:   []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
+		Allow: SipAllow{
+			Methods: [][]byte{[]byte("PRACK"), []byte("INVITE"), []byte("ACK"), []byte("BYE"), []byte("CANCEL"), []byte("UPDATE"), []byte("INFO"), []byte("SUBSCRIBE"), []byte("NOTIFY"), []byte("REFER"), []byte("MESSAGE"), []byte("OPTIONS")},
+			Src:     []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
 		},
-		Auth: SipVal{
-			Value: []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
-			Src:   []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
+		Auth: SipAuth{
+			Digest:    []byte("Digest"),
+			Username:  []byte("bob"),
+			Realm:     []byte("127.0.0.1"),
+			Nonce:     []byte("dcd98b7102dd2f0e8b11d0f600bfb0c093"),
+			Uri:       []byte("sip:127.0.0.1"),
+			Qop:       []byte(nil),
+			Nc:        []byte(nil),
+			Cnonce:    []byte(nil),
+			Response:  []byte("6629fae49393a05397450978507c4ef1"),
+			Algorithm: []byte("MD5"),
+			Src:       []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
 		},
 		MaxFwd: SipVal{
 			Value: []byte("70"),

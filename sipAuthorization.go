@@ -1,6 +1,10 @@
 package siprocket
 
-import "bytes"
+import (
+	"bytes"
+	"fmt"
+	"strings"
+)
 
 /*
  RFC 3261 - https://www.ietf.org/rfc/rfc3261.txt - 22 Usage of HTTP Authentication
@@ -73,15 +77,29 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 	for pos < len(v) {
 		switch state {
 		case FIELD_DIGEST:
+			if bytes.HasPrefix(v[pos:], []byte("Digest ")) {
+				out.Digest = []byte("Digest")
+				state = FIELD_USERNAME
+				pos += len("Digest ")
+				continue
+			}
+			if v[pos] == ' ' {
+				pos++
+				continue
+			}
+		case FIELD_USERNAME:
 			if bytes.HasPrefix(v[pos:], []byte("username=\"")) {
 				state = FIELD_USERNAME
 				pos += len("username=\"")
 				continue
 			}
-		case FIELD_USERNAME:
 			if bytes.HasPrefix(v[pos:], []byte("\",")) {
 				state = FIELD_REALM
 				pos += len("\",")
+				continue
+			}
+			if v[pos] == ' ' {
+				pos++
 				continue
 			}
 			out.Username = append(out.Username, v[pos])
@@ -97,6 +115,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 				pos += len("\",")
 				continue
 			}
+			if v[pos] == ' ' {
+				pos++
+				continue
+			}
 			out.Realm = append(out.Realm, v[pos])
 
 		case FIELD_NONCE:
@@ -108,6 +130,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 			if bytes.HasPrefix(v[pos:], []byte("\",")) {
 				state = FIELD_URI
 				pos += len("\",")
+				continue
+			}
+			if v[pos] == ' ' {
+				pos++
 				continue
 			}
 			out.Nonce = append(out.Nonce, v[pos])
@@ -123,6 +149,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 				pos += len("\",")
 				continue
 			}
+			if v[pos] == ' ' {
+				pos++
+				continue
+			}
 			out.Uri = append(out.Uri, v[pos])
 
 		case FIELD_RESPONSE:
@@ -134,6 +164,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 			if bytes.HasPrefix(v[pos:], []byte("\",")) {
 				state = FIELD_ALGORITHM
 				pos += len("\",")
+				continue
+			}
+			if v[pos] == ' ' {
+				pos++
 				continue
 			}
 			out.Response = append(out.Response, v[pos])
@@ -149,6 +183,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 				pos += len(",")
 				continue
 			}
+			if v[pos] == ' ' {
+				pos++
+				continue
+			}
 			out.Algorithm = append(out.Algorithm, v[pos])
 
 		case FIELD_OPAQUE:
@@ -160,6 +198,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 			if bytes.HasPrefix(v[pos:], []byte("\",")) {
 				state = FIELD_QOP
 				pos += len("\",")
+				continue
+			}
+			if v[pos] == ' ' {
+				pos++
 				continue
 			}
 			out.Opaque = append(out.Opaque, v[pos])
@@ -175,6 +217,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 				pos += len(",")
 				continue
 			}
+			if v[pos] == ' ' {
+				pos++
+				continue
+			}
 			out.Qop = append(out.Qop, v[pos])
 
 		case FIELD_NC:
@@ -186,6 +232,10 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 			if bytes.HasPrefix(v[pos:], []byte(",")) {
 				state = FIELD_CNONCE
 				pos += len(",")
+				continue
+			}
+			if v[pos] == ' ' {
+				pos++
 				continue
 			}
 			out.Nc = append(out.Nc, v[pos])
@@ -201,8 +251,60 @@ func parseSipAuthorization(v []byte, out *SipAuth) {
 				pos += len("\",")
 				continue
 			}
+			if v[pos] == ' ' {
+				pos++
+				continue
+			}
 			out.Cnonce = append(out.Cnonce, v[pos])
 		}
 		pos++
 	}
+
+}
+
+func MarshalSipAuth(auth *SipAuth) string {
+	var sb strings.Builder
+
+	sb.WriteString("Authorization: ")
+
+	if auth.Digest != nil {
+		fmt.Fprintf(&sb, "%s ", auth.Digest)
+	}
+
+	if auth.Username != nil {
+		fmt.Fprintf(&sb, `username="%s", `, auth.Username)
+	}
+	if auth.Realm != nil {
+		fmt.Fprintf(&sb, `realm="%s", `, auth.Realm)
+	}
+	if auth.Nonce != nil {
+		fmt.Fprintf(&sb, `nonce="%s", `, auth.Nonce)
+	}
+	if auth.Uri != nil {
+		fmt.Fprintf(&sb, `uri="%s", `, auth.Uri)
+	}
+	if auth.Qop != nil {
+		fmt.Fprintf(&sb, `qop=%s, `, auth.Qop)
+	}
+	if auth.Nc != nil {
+		fmt.Fprintf(&sb, `nc=%s, `, auth.Nc)
+	}
+	if auth.Cnonce != nil {
+		fmt.Fprintf(&sb, `cnonce="%s", `, auth.Cnonce)
+	}
+	if auth.Response != nil {
+		fmt.Fprintf(&sb, `response="%s", `, auth.Response)
+	}
+	if auth.Algorithm != nil {
+		fmt.Fprintf(&sb, `algorithm=%s, `, auth.Algorithm)
+	}
+	if auth.Opaque != nil {
+		fmt.Fprintf(&sb, `opaque="%s", `, auth.Opaque)
+	}
+
+	result := sb.String()
+	result = strings.TrimSuffix(result, ", ") // Remove the trailing comma and space
+	result += "\r\n"
+
+	return result
 }

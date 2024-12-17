@@ -18,8 +18,8 @@ type SipMsg struct {
 	Cseq     SipCseq
 	Ua       SipVal
 	Exp      SipVal
-	Auth     SipVal
-	Allow    SipVal
+	Auth     SipAuth
+	Allow    SipAllow
 	MaxFwd   SipVal
 	CallId   SipVal
 	ContType SipVal
@@ -118,10 +118,10 @@ func Parse(v []byte) (output SipMsg) {
 				case lhdr == "cseq":
 					parseSipCseq(lval, &output.Cseq)
 				case lhdr == "authorization":
-					output.Auth.Value = lval
+					parseSipAuthorization(lval, &output.Auth)
 					output.Auth.Src = lval
 				case lhdr == "allow":
-					output.Allow.Value = lval
+					parseSipAllow(lval, &output.Allow)
 					output.Allow.Src = lval
 				case lhdr == "x-gamma-public-ip":
 					output.XGammaIP.Value = lval
@@ -280,7 +280,18 @@ func PrintSipStruct(data *SipMsg) {
 	fmt.Println("    [Src] =>", string(data.Exp.Src))
 	// Authorization
 	fmt.Println("  [Authorization]")
-	fmt.Println("    [Value] =>", string(data.Auth.Value))
+	// fmt.Println("    [Value] =>", string(data.Auth.Value))
+	fmt.Println("    [Digest] =>", string(data.Auth.Digest))
+	fmt.Println("    [Username] =>", string(data.Auth.Username))
+	fmt.Println("    [Realm] =>", string(data.Auth.Realm))
+	fmt.Println("    [Nonce] =>", string(data.Auth.Nonce))
+	fmt.Println("    [Uri] =>", string(data.Auth.Uri))
+	fmt.Println("    [Qop] =>", string(data.Auth.Qop))
+	fmt.Println("    [Nc] =>", string(data.Auth.Nc))
+	fmt.Println("    [Cnonce] =>", string(data.Auth.Cnonce))
+	fmt.Println("    [Response] =>", string(data.Auth.Response))
+	fmt.Println("    [Algorithm] =>", string(data.Auth.Algorithm))
+	fmt.Println("    [Opaque] =>", string(data.Auth.Opaque))
 	fmt.Println("    [Src] =>", string(data.Auth.Src))
 	// MaxFwd
 	fmt.Println("  [Max Forwards]")

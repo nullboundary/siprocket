@@ -1,6 +1,9 @@
 package siprocket
 
-import "bytes"
+import (
+	"bytes"
+	"strings"
+)
 
 type SipAllow struct {
 	Methods [][]byte // List of methods
@@ -27,4 +30,21 @@ func parseSipAllow(v []byte, out *SipAllow) {
 		// Append the method to the Methods slice
 		out.Methods = append(out.Methods, method)
 	}
+}
+
+func MarshalSipAllow(data *SipAllow) string {
+	var sb bytes.Buffer
+
+	sb.WriteString(HEADER_ALLOW + ": ")
+
+	for _, method := range data.Methods {
+		sb.Write(method)
+		sb.WriteString(", ")
+	}
+
+	result := sb.String()
+	result = strings.TrimSuffix(result, ", ") // Remove the trailing comma and space
+	result += ENDL
+
+	return result
 }

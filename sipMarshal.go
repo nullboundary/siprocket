@@ -66,7 +66,8 @@ func writeRequestLine(sb *strings.Builder, data *SipMsg) {
 // writeViaHeaders writes the Via headers to the string builder
 func writeViaHeaders(sb *strings.Builder, data *SipMsg) {
 	for _, via := range data.Via {
-		fmt.Fprintf(sb, "%s: %s%s", HEADER_VIA, via.Src, ENDL)
+		viaHeader := MarshalSipVia(&via)
+		sb.WriteString(viaHeader)
 	}
 }
 
@@ -145,15 +146,15 @@ func writeExpiresHeader(sb *strings.Builder, data *SipMsg) {
 
 // writeAuthorizationHeader writes the Authorization header to the string builder
 func writeAuthorizationHeader(sb *strings.Builder, data *SipMsg) {
-	if data.Auth.Value != nil {
-		fmt.Fprintf(sb, "%s: %s%s", HEADER_AUTHORIZATION, data.Auth.Value, ENDL)
+	if data.Auth.Digest != nil {
+		sb.WriteString(MarshalSipAuth(&data.Auth))
 	}
 }
 
 // writeAllowHeader writes the Allow header to the string builder
 func writeAllowHeader(sb *strings.Builder, data *SipMsg) {
-	if data.Allow.Value != nil {
-		fmt.Fprintf(sb, "%s: %s%s", HEADER_ALLOW, data.Allow.Value, ENDL)
+	if data.Allow.Methods != nil {
+		sb.WriteString(MarshalSipAllow(&data.Allow))
 	}
 }
 

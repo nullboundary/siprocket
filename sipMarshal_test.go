@@ -73,13 +73,21 @@ func Test_sipMarshal_Register_test(t *testing.T) {
 			Value: []byte("300"),
 			Src:   []byte("300"),
 		},
-		Auth: SipVal{
-			Value: []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
-			Src:   []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
+		Auth: SipAuth{
+			Digest:    []byte("Digest"),
+			Username:  []byte("bob"),
+			Realm:     []byte("127.0.0.1"),
+			Nonce:     []byte("dcd98b7102dd2f0e8b11d0f600bfb0c093"),
+			Uri:       []byte("sip:127.0.0.1"),
+			Qop:       []byte(nil),
+			Nc:        []byte(nil),
+			Cnonce:    []byte(nil),
+			Response:  []byte("6629fae49393a05397450978507c4ef1"),
+			Algorithm: []byte("MD5"),
 		},
-		Allow: SipVal{
-			Value: []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
-			Src:   []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
+		Allow: SipAllow{
+			Methods: [][]byte{[]byte("PRACK"), []byte("INVITE"), []byte("ACK"), []byte("BYE"), []byte("CANCEL"), []byte("UPDATE"), []byte("INFO"), []byte("SUBSCRIBE"), []byte("NOTIFY"), []byte("REFER"), []byte("MESSAGE"), []byte("OPTIONS")},
+			Src:     []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
 		},
 		MaxFwd: SipVal{
 			Value: []byte("70"),
@@ -295,13 +303,21 @@ func BenchmarkMarshal(b *testing.B) {
 			Value: []byte("300"),
 			Src:   []byte("300"),
 		},
-		Auth: SipVal{
-			Value: []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
-			Src:   []byte(`Digest username="bob", realm="127.0.0.1", nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093", uri="sip:127.0.0.1", response="6629fae49393a05397450978507c4ef1", algorithm=MD5`),
+		Auth: SipAuth{
+			Digest:    []byte("Digest"),
+			Username:  []byte("bob"),
+			Realm:     []byte("127.0.0.1"),
+			Nonce:     []byte("dcd98b7102dd2f0e8b11d0f600bfb0c093"),
+			Uri:       []byte("sip::127.0.0.1"),
+			Qop:       []byte(nil),
+			Nc:        []byte(nil),
+			Cnonce:    []byte(nil),
+			Response:  []byte("6629fae49393a05397450978507c4ef1"),
+			Algorithm: []byte("MD5"),
 		},
-		Allow: SipVal{
-			Value: []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
-			Src:   []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
+		Allow: SipAllow{
+			Methods: [][]byte{[]byte("PRACK"), []byte("INVITE"), []byte("ACK"), []byte("BYE"), []byte("CANCEL"), []byte("UPDATE"), []byte("INFO"), []byte("SUBSCRIBE"), []byte("NOTIFY"), []byte("REFER"), []byte("MESSAGE"), []byte("OPTIONS")},
+			Src:     []byte("PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS"),
 		},
 		MaxFwd: SipVal{
 			Value: []byte("70"),

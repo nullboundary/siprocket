@@ -1,5 +1,9 @@
 package siprocket
 
+import (
+	"strings"
+)
+
 /*
  RFC 3261 - https://www.ietf.org/rfc/rfc3261.txt - 8.1.1.7 Via
 
@@ -196,4 +200,50 @@ func parseSipVia(v []byte, out *SipVia) {
 		}
 		pos++
 	}
+}
+
+func MarshalSipVia(via *SipVia) string {
+	var sb strings.Builder
+
+	sb.WriteString(HEADER_VIA + ": ")
+
+	// Append transport protocol
+	sb.WriteString("SIP/2.0/")
+	sb.WriteString(strings.ToUpper(via.Trans))
+	sb.WriteString(" ")
+
+	// Append host and port
+	sb.Write(via.Host)
+	if len(via.Port) > 0 {
+		sb.WriteString(":")
+		sb.Write(via.Port)
+	}
+
+	// Append parameters
+	if len(via.Rport) > 0 {
+		sb.WriteString(";rport=")
+		sb.Write(via.Rport)
+	} else {
+		sb.WriteString(";rport")
+	}
+	if len(via.Branch) > 0 {
+		sb.WriteString(";branch=")
+		sb.Write(via.Branch)
+	}
+	if len(via.Maddr) > 0 {
+		sb.WriteString(";maddr=")
+		sb.Write(via.Maddr)
+	}
+	if len(via.Ttl) > 0 {
+		sb.WriteString(";ttl=")
+		sb.Write(via.Ttl)
+	}
+	if len(via.Rcvd) > 0 {
+		sb.WriteString(";received=")
+		sb.Write(via.Rcvd)
+	}
+
+	sb.WriteString(ENDL)
+
+	return sb.String()
 }
