@@ -649,9 +649,10 @@ func Test_sipParse_302Test(t *testing.T) {
 			User:    []byte(nil),
 			Host:    []byte("novatm.co.uk"),
 			Port:    []byte("5060"),
-			Tran:    []byte(nil),
+			Tran:    []byte("udp"),
 			Qval:    []byte("0.5"),
 			Expires: []byte(nil),
+			Maddr:   []byte("10.124.133.15"),
 			Src:     []byte("<sip:novatm.co.uk:5060;transport=udp;maddr=10.124.133.15>;q=0.5"),
 		},
 		Via: []SipVia{
@@ -867,6 +868,44 @@ func Test_sipParse_AuthTest(t *testing.T) {
 	if !eq {
 		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
 	}
+}
+
+func Test_sipParse_200OKTest(t *testing.T) {
+
+	var out, exp SipMsg
+
+	msg := `SIP/2.0 200 OK
+Via: SIP/2.0/udp 127.0.0.1:65223;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV;rport=
+From: "bob" <sip:bob@127.0.0.1>;tag=dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc
+To: "alice" <sip:alice@127.0.0.1>;tag=z9hG4bK1811891bb91f7ef8
+Contact: "alice" <sip:alice@192.168.7.219:5060;transport=UDP>
+Call-ID: A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI
+CSeq: 5023 CANCEL
+User-Agent: Telephone 1.6
+Expires: 3600
+Content-Length: 0
+`
+	exp = SipMsg{
+		Req: NewSipReq("", "", "", "", "", "", "200", "OK", "SIP/2.0 200 OK"),
+		Via: []SipVia{
+			NewSipVia("udp", "127.0.0.1", "65223", "z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV", "", "SIP/2.0/udp 127.0.0.1:65223;rport;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV"),
+		},
+		From:    NewSipFrom("sip", "bob", "bob", "127.0.0.1", "", "dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc", `"bob" <sip:bob@127.0.0.1>;tag=dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc`),
+		To:      NewSipTo("sip", "alice", "alice", "127.0.0.1", "", "z9hG4bK1811891bb91f7ef8", `"alice" <sip:alice@127.0.0.1>;tag=z9hG4bK1811891bb91f7ef8`),
+		Contact: NewSipContact("sip", "alice", "alice", "192.168.7.219", "5060", "UDP", "", "", "", `"alice" <sip:alice@192.168.7.219:5060;transport=UDP>`),
+		CallId:  NewSipVal("A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI", "A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI"),
+		Cseq:    NewSipCseq("5023", "CANCEL", "5023 CANCEL"),
+		Ua:      NewSipVal("Telephone 1.6", "Telephone 1.6"),
+		Exp:     NewSipVal("3600", "3600"),
+		ContLen: NewSipVal("0", "0"),
+	}
+
+	out = Parse([]byte(msg))
+	eq := reflect.DeepEqual(out, exp)
+	if !eq {
+		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
+	}
+
 }
 
 func (s SipReq) MarshalJSON() ([]byte, error) {

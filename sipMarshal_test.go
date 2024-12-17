@@ -156,10 +156,10 @@ Content-Length: 0
 func Test_sipMarshal_Invite_test(t *testing.T) {
 
 	msgData := SipMsg{
-		Req:     NewSipReq("INVITE", "sip", "1001", "127.0.0.1", "", "", "INVITE sip:1001@127.0.0.1 SIP/2.0"),
+		Req:     NewSipReq("INVITE", "sip", "1001", "127.0.0.1", "", "", "", "", "INVITE sip:1001@127.0.0.1 SIP/2.0"),
 		From:    NewSipFrom("sip", "bob", "bob", "127.0.0.1", "", "dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc", `"bob" <sip:bob@127.0.0.1>;tag=dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc`),
 		To:      NewSipTo("sip", "1001", "1001", "127.0.0.1", "", "", `"1001" <sip:1001@127.0.0.1>;tag=`),
-		Contact: NewSipContact("sip", "bob", "bob", "127.0.0.1", "65223", "", "", "", `"bob" <sip:bob@127.0.0.1:65223>`),
+		Contact: NewSipContact("sip", "bob", "bob", "127.0.0.1", "65223", "", "", "", "", `"bob" <sip:bob@127.0.0.1:65223>`),
 		Via: []SipVia{
 			NewSipVia("UDP", "127.0.0.1", "65223", "z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV", "", "SIP/2.0/UDP 127.0.0.1:65223;rport;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV"),
 		},

@@ -26,15 +26,17 @@ type SipReq struct {
 	Src        []byte // Full source if needed
 }
 
-func NewSipReq(method, uriType, user, host, port, userType, src string) SipReq {
+func NewSipReq(method, uriType, user, host, port, userType, statusCode, statusDesc, src string) SipReq {
 	return SipReq{
-		Method:   []byte(method),
-		UriType:  []byte(uriType),
-		User:     []byte(user),
-		Host:     []byte(host),
-		Port:     []byte(port),
-		UserType: []byte(userType),
-		Src:      []byte(src),
+		Method:     []byte(method),
+		UriType:    []byte(uriType),
+		User:       []byte(user),
+		Host:       []byte(host),
+		Port:       []byte(port),
+		UserType:   []byte(userType),
+		StatusCode: []byte(statusCode),
+		StatusDesc: []byte(statusDesc),
+		Src:        []byte(src),
 	}
 }
 

@@ -39,10 +39,11 @@ type SipContact struct {
 	Tran    []byte // Transport
 	Qval    []byte // Q Value
 	Expires []byte // Expires
+	Maddr   []byte
 	Src     []byte // Full source if needed
 }
 
-func NewSipContact(uriType, name, user, host, port, tran, qval, expires, src string) SipContact {
+func NewSipContact(uriType, name, user, host, port, tran, qval, expires, maddr, src string) SipContact {
 	return SipContact{
 		UriType: []byte(uriType),
 		Name:    []byte(name),
@@ -52,6 +53,7 @@ func NewSipContact(uriType, name, user, host, port, tran, qval, expires, src str
 		Tran:    []byte(tran),
 		Qval:    []byte(qval),
 		Expires: []byte(expires),
+		Maddr:   []byte(maddr),
 		Src:     []byte(src),
 	}
 }
@@ -69,6 +71,7 @@ func parseSipContact(v []byte, out *SipContact) error {
 	out.Tran = nil
 	out.Qval = nil
 	out.Expires = nil
+	out.Maddr = nil
 	out.Src = nil
 
 	// Keep the source line if needed
@@ -76,175 +79,183 @@ func parseSipContact(v []byte, out *SipContact) error {
 		out.Src = v
 	}
 
-	// Check if our uri string uses <> encapsulation
-	// Although <> is not a reserved charactor so its possible we can go wrong
-	// If there is a name string then encapsultion must be used.
-	if idx = bytes.LastIndexByte(v, byte('>')); idx > -1 {
-
-		// parse header parameters of the encapulated form
-		parseSipContactHeaderParams(v[idx:], out)
-		v = v[:idx]
-
-		if idx = bytes.LastIndexByte(v, byte('<')); idx == -1 {
-			return errors.New("found ending encapsualtion > but not staring <")
-		}
-
-		// Extract the name field
-		out.Name = v[:idx]
-
-		// clean up out.Name
-		out.Name = bytes.Trim(out.Name, ` `)
+	// Extract the display name if present
+	if idx = bytes.IndexByte(v, byte('<')); idx > -1 {
+		out.Name = bytes.TrimSpace(v[:idx])
 		out.Name = bytes.Trim(out.Name, `"`)
+		v = v[idx:]
+	}
 
-		v = v[idx+1:]
+	if idx = bytes.IndexByte(v, byte('<')); idx > -1 {
 
-		// Next we'll find that method SIP(S)
-		// Whilse the protocol allows the use 352 URI schema (we are only supporting sip)
-		// https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
-		if idx = bytes.Index(v, []byte("sip:")); idx > -1 {
-			out.UriType = v[idx : idx+3]
-			v = v[idx+4:]
-		} else if idx = bytes.Index(v, []byte("sips:")); idx > -1 {
-			out.UriType = v[idx : idx+4]
-			v = v[idx+5:]
-		} else {
-			return errors.New("unsupport URI-Schema found")
+		endIdx := bytes.IndexByte(v, byte('>')) // index of closing angle bracket
+		if endIdx == -1 {
+			return errors.New("missing closing angle bracket")
 		}
 
-		// Next find if userinfo is present denoted by @ (reserved charactor)
-		if idx = bytes.IndexByte(v, byte('@')); idx > -1 {
-			out.User = v[:idx]
-			v = v[idx+1:]
+		// Extract the URI part
+		uriPart := v[idx+1 : endIdx]
+		var insideParams []byte
+		semiIdx := bytes.IndexByte(uriPart, byte(';')) // index of semicolon
+		if semiIdx > -1 {                              // If a semicolon is found, split the URI part and parameters part
+			insideParams = uriPart[semiIdx:]
+			uriPart = uriPart[:semiIdx]
+		}
+		// } else { // else no semicolon found, the parameters part is after the closing angle bracket
+		// 	paramsPart = v[endIdx+1:]
+		// }
+
+		// parseUri(uriPart, out)
+		// parseSipContactHeaderParams(paramsPart, out)
+
+		// Parse the URI part
+		parseUri(uriPart, out)
+
+		// Parse parameters inside the angle brackets
+		if len(insideParams) > 0 {
+			parseSipContactHeaderParams(insideParams, out)
 		}
 
-		// Trim of the password from the user section
-		if idx = bytes.IndexByte(out.User, byte(':')); idx > -1 {
-			out.User = out.User[:idx]
+		// Extract and parse parameters outside the angle brackets
+		outsideParams := v[endIdx+1:]
+		if len(outsideParams) > 0 {
+			parseSipContactHeaderParams(outsideParams, out)
 		}
-
-		// Apply fix for a non complient ua
-		if idx = bytes.IndexByte(out.User, byte(';')); idx > -1 {
-			//out.Params = append(out.Params, out.User[idx+1:])
-			out.User = out.User[:idx]
-		}
-
-		// Extract the URL parameters
-		// These can only be located inside the encapsulated form
-		for {
-			if idx = bytes.LastIndexByte(v, byte(';')); idx == -1 {
-				break
-			}
-			//out.Params = append(out.Params, v[idx+1:])
-			v = v[:idx]
-		}
-
-		// remote any port
-		if idx = bytes.IndexByte(v, byte(':')); idx > -1 {
-			out.Port = v[idx+1:]
-			v = v[:idx]
-		}
-
-		// all that is left is the host
-		out.Host = v
-
-	} else {
-		// Parse header parameters of the non encapsulated form
-
-		// Next we'll find that method SIP(S)
-		// Whilse the protocol allows the use 352 URI schema (we are only supporting sip)
-		// https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
-		if idx = bytes.Index(v, []byte("sip:")); idx > -1 {
-			out.UriType = v[idx : idx+3]
-			v = v[idx+4:]
-		} else if idx = bytes.Index(v, []byte("sips:")); idx > -1 {
-			out.UriType = v[idx : idx+4]
-			v = v[idx+5:]
-		} else {
-			return errors.New("unsupport URI-Schema found")
-		}
-
-		// Next find if userinfo is present denoted by @ (reserved charactor)
-		if idx = bytes.IndexByte(v, byte('@')); idx > -1 {
-			out.User = v[:idx]
-			v = v[idx+1:]
-		}
-
-		// Trim of the password from the user section
-		if idx = bytes.IndexByte(out.User, byte(':')); idx > -1 {
-			out.User = out.User[:idx]
-		}
-
-		// Apply fix for a non complient ua
-		if idx = bytes.IndexByte(out.User, byte(';')); idx > -1 {
-			//out.Params = append(out.Params, out.User[idx+1:])
-			out.User = out.User[:idx]
-		}
-
-		// In the non encapsulated the query form is possible
-		if idx = bytes.LastIndexByte(v, byte('?')); idx > -1 {
-			// parse header parameters
-			parseSipContactHeaderParams(v[idx:], out)
-			v = v[:idx]
-			// Extract the URL parameters
-			// only available if the query form is used
-			for {
-				if idx = bytes.LastIndexByte(v, byte(';')); idx == -1 {
-					break
-				}
-				//out.Params = append(out.Params, v[idx+1:])
-				v = v[:idx]
-			}
-		} else {
-			// Parse header parameters
-			if idx = bytes.LastIndexByte(v, byte(';')); idx > -1 {
-				parseSipContactHeaderParams(v[idx:], out)
-				v = v[:idx]
-			}
-		}
-
-		// remote any port
-		if idx = bytes.IndexByte(v, byte(':')); idx > -1 {
-			out.Port = v[idx+1:]
-			v = v[:idx]
-		}
-
-		// all that is left is the host
-		out.Host = v
+	} else { // Non-encapsulated form
+		parseUri(v, out)
+		parseSipContactHeaderParams(v, out)
 	}
 
 	return nil
-
 }
 
-func parseSipContactHeaderParams(v []byte, out *SipContact) {
-	var idx int
+func parseUri(uriPart []byte, out *SipContact) {
+	// Find the URI scheme (sip or sips)
+	if idx := bytes.Index(uriPart, []byte("sip:")); idx > -1 {
+		out.UriType = uriPart[idx : idx+3]
+		uriPart = uriPart[idx+4:]
+	} else if idx := bytes.Index(uriPart, []byte("sips:")); idx > -1 {
+		out.UriType = uriPart[idx : idx+4]
+		uriPart = uriPart[idx+5:]
+	} else {
+		return
+	}
 
-	for {
-		if idx = bytes.LastIndexByte(v[idx:], byte(';')); idx == -1 {
-			break
-		}
+	// Find if userinfo is present, denoted by @
+	if idx := bytes.IndexByte(uriPart, byte('@')); idx > -1 {
+		out.User = uriPart[:idx]
+		uriPart = uriPart[idx+1:]
+	}
 
-		if len(v[idx:]) < 3 {
-			v = v[:idx]
+	// Trim off the password from the user section
+	if idx := bytes.IndexByte(out.User, byte(':')); idx > -1 {
+		out.User = out.User[:idx]
+	}
+
+	// Apply fix for a non-compliant UA
+	if idx := bytes.IndexByte(out.User, byte(';')); idx > -1 {
+		out.User = out.User[:idx]
+	}
+
+	// Split the remaining part into host and port
+	hostPort := bytes.Split(uriPart, []byte(":"))
+	if len(hostPort) == 2 {
+		out.Host = hostPort[0]
+		out.Port = hostPort[1]
+	} else {
+		out.Host = uriPart
+	}
+}
+
+// func parseSipContactHeaderParams(paramsPart []byte, out *SipContact) {
+// 	var idx int
+
+// 	for {
+// 		if idx = bytes.IndexByte(paramsPart, byte(';')); idx == -1 {
+// 			break
+// 		}
+
+// 		param := paramsPart[idx:]
+// 		paramsPart = paramsPart[:idx]
+
+// 		if len(param) < 3 {
+// 			continue
+// 		}
+
+// 		if string(param[:3]) == ";q=" {
+// 			out.Qval = param[3:]
+// 			continue
+// 		}
+
+// 		if len(param) < 7 {
+// 			continue
+// 		}
+
+// 		if string(param[:7]) == ";maddr=" {
+// 			out.Maddr = param[7:]
+// 			continue
+// 		}
+
+// 		if len(param) < 9 {
+// 			continue
+// 		}
+
+// 		if string(param[:9]) == ";expires=" {
+// 			out.Expires = param[9:]
+// 			continue
+// 		}
+
+// 		if len(param) < 11 {
+// 			continue
+// 		}
+
+// 		if string(param[:11]) == ";transport=" {
+// 			out.Tran = param[11:]
+// 			continue
+// 		}
+
+// 	}
+
+// }
+
+func parseSipContactHeaderParams(paramsPart []byte, out *SipContact) {
+	paramsPart = bytes.TrimSpace(paramsPart)
+
+	// if ; is the first character, remove it
+	if len(paramsPart) > 0 && paramsPart[0] == ';' {
+		paramsPart = paramsPart[1:]
+	}
+
+	// Split the parameters by semicolon
+	params := bytes.Split(paramsPart, []byte(";"))
+
+	for _, param := range params {
+		if len(param) == 0 {
 			continue
 		}
 
-		if string(v[idx:idx+3]) == ";q=" {
-			out.Qval = v[idx+3:]
-			v = v[:idx]
+		// Check for ";q="
+		if bytes.HasPrefix(param, []byte("q=")) {
+			out.Qval = param[2:]
 			continue
 		}
 
-		if len(v[idx:]) < 9 {
-			v = v[:idx]
+		// Check for ";expires="
+		if bytes.HasPrefix(param, []byte("expires=")) {
+			out.Expires = param[8:]
 			continue
 		}
 
-		if string(v[idx:idx+9]) == ";expires=" {
-			out.Expires = v[idx+9:]
+		// Check for ";transport="
+		if bytes.HasPrefix(param, []byte("transport=")) {
+			out.Tran = param[10:]
+			continue
 		}
 
-		v = v[:idx]
-		continue
+		// Check for ";maddr="
+		if bytes.HasPrefix(param, []byte("maddr=")) {
+			out.Maddr = param[6:]
+			continue
+		}
 	}
 }
