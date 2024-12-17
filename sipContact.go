@@ -101,13 +101,6 @@ func parseSipContact(v []byte, out *SipContact) error {
 			insideParams = uriPart[semiIdx:]
 			uriPart = uriPart[:semiIdx]
 		}
-		// } else { // else no semicolon found, the parameters part is after the closing angle bracket
-		// 	paramsPart = v[endIdx+1:]
-		// }
-
-		// parseUri(uriPart, out)
-		// parseSipContactHeaderParams(paramsPart, out)
-
 		// Parse the URI part
 		parseUri(uriPart, out)
 
@@ -166,57 +159,6 @@ func parseUri(uriPart []byte, out *SipContact) {
 		out.Host = uriPart
 	}
 }
-
-// func parseSipContactHeaderParams(paramsPart []byte, out *SipContact) {
-// 	var idx int
-
-// 	for {
-// 		if idx = bytes.IndexByte(paramsPart, byte(';')); idx == -1 {
-// 			break
-// 		}
-
-// 		param := paramsPart[idx:]
-// 		paramsPart = paramsPart[:idx]
-
-// 		if len(param) < 3 {
-// 			continue
-// 		}
-
-// 		if string(param[:3]) == ";q=" {
-// 			out.Qval = param[3:]
-// 			continue
-// 		}
-
-// 		if len(param) < 7 {
-// 			continue
-// 		}
-
-// 		if string(param[:7]) == ";maddr=" {
-// 			out.Maddr = param[7:]
-// 			continue
-// 		}
-
-// 		if len(param) < 9 {
-// 			continue
-// 		}
-
-// 		if string(param[:9]) == ";expires=" {
-// 			out.Expires = param[9:]
-// 			continue
-// 		}
-
-// 		if len(param) < 11 {
-// 			continue
-// 		}
-
-// 		if string(param[:11]) == ";transport=" {
-// 			out.Tran = param[11:]
-// 			continue
-// 		}
-
-// 	}
-
-// }
 
 func parseSipContactHeaderParams(paramsPart []byte, out *SipContact) {
 	paramsPart = bytes.TrimSpace(paramsPart)
