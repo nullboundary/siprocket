@@ -891,7 +891,7 @@ Content-Length: 0
 	exp = SipMsg{
 		Req: NewSipReq("", "", "", "", "", "", "200", "OK", "SIP/2.0 200 OK"),
 		Via: []SipVia{
-			NewSipVia("udp", "127.0.0.1", "65223", "z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV", "", "SIP/2.0/udp 127.0.0.1:65223;rport;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV"),
+			NewSipVia("udp", "127.0.0.1", "65223", "z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV", "", "SIP/2.0/udp 127.0.0.1:65223;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV;rport="),
 		},
 		From:    NewSipFrom("sip", "bob", "bob", "127.0.0.1", "", "dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc", `"bob" <sip:bob@127.0.0.1>;tag=dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc`),
 		To:      NewSipTo("sip", "alice", "alice", "127.0.0.1", "", "z9hG4bK1811891bb91f7ef8", `"alice" <sip:alice@127.0.0.1>;tag=z9hG4bK1811891bb91f7ef8`),
@@ -906,7 +906,7 @@ Content-Length: 0
 	out = Parse([]byte(msg))
 	eq := reflect.DeepEqual(out, exp)
 	if !eq {
-		t.Errorf("Mismatch:\nExpected:\n%s\nGot:\n%s", exp, out)
+		t.Errorf("Mismatch:\nExpected:\n%q\nGot:\n%q", exp, out)
 	}
 
 }

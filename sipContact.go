@@ -3,7 +3,6 @@ package siprocket
 import (
 	"bytes"
 	"errors"
-	"fmt"
 )
 
 /*
@@ -60,6 +59,16 @@ func NewSipContact(uriType, name, user, host, port, tran, qval, expires, maddr, 
 	}
 }
 
+// <sip:+441304380808;tgrp=PST_IB2_B2BUA_04_01;trunk-context=hex-mgc-01.gamma.uktel.org.uk@10.123.128.137:5060;user=phone>
+// <sip:novatm.co.uk:5060;transport=udp;maddr=10.124.133.15>;q=0.5
+// "bob" <sip:bob@127.0.0.1:65223;ob>
+// "alice" <sip:alice@192.168.7.219:5060;transport=UDP>
+// <sip:+44111223344@10.0.0.2:5060>
+
+// find the <> and split the string into 2 parts inside and outside the <>
+
+// inside the <> split the string by ; and parse the parameters
+
 func parseSipContact(v []byte, out *SipContact) error {
 
 	var idx int
@@ -82,13 +91,14 @@ func parseSipContact(v []byte, out *SipContact) error {
 		out.Src = v
 	}
 
-	// Extract the display name if present
+	// parse out the display name if present
 	if idx = bytes.IndexByte(v, byte('<')); idx > -1 {
 		out.Name = bytes.TrimSpace(v[:idx])
 		out.Name = bytes.Trim(out.Name, `"`)
 		v = v[idx:]
 	}
 
+	// if < is present, then it is encapsulated form
 	if idx = bytes.IndexByte(v, byte('<')); idx > -1 {
 
 		endIdx := bytes.IndexByte(v, byte('>')) // index of closing angle bracket
@@ -96,33 +106,38 @@ func parseSipContact(v []byte, out *SipContact) error {
 			return errors.New("missing closing angle bracket")
 		}
 
+		// outside the <> parse the parameters
+		outsideParams := v[endIdx+1:]
+		if len(outsideParams) > 0 {
+			parseSipContactHeaderParams(outsideParams, out)
+		}
+
 		// Extract the URI part
 		uriPart := v[idx+1 : endIdx]
 		var insideParams []byte
 		semiIdx := bytes.IndexByte(uriPart, byte(';')) // index of semicolon
-		if semiIdx > -1 {                              // If a semicolon is found, split the URI part and parameters part
+
+		// If a semicolon is found, split the URI part and parameters part
+		if semiIdx > -1 {
 			insideParams = uriPart[semiIdx:]
 			uriPart = uriPart[:semiIdx]
 		}
-		// Parse the URI part
-		parseUri(uriPart, out)
 
 		// Parse parameters inside the angle brackets
 		if len(insideParams) > 0 {
 			parseSipContactHeaderParams(insideParams, out)
 		}
 
-		// Extract and parse parameters outside the angle brackets
-		outsideParams := v[endIdx+1:]
-		if len(outsideParams) > 0 {
-			parseSipContactHeaderParams(outsideParams, out)
-		}
+		// Parse the URI part
+		parseUri(uriPart, out)
+
 	} else { // Non-encapsulated form
 		parseUri(v, out)
 		parseSipContactHeaderParams(v, out)
 	}
 
 	return nil
+
 }
 
 func parseUri(uriPart []byte, out *SipContact) {
@@ -141,6 +156,11 @@ func parseUri(uriPart []byte, out *SipContact) {
 	if idx := bytes.IndexByte(uriPart, byte('@')); idx > -1 {
 		out.User = uriPart[:idx]
 		uriPart = uriPart[idx+1:]
+
+	} else if idx := bytes.IndexByte(uriPart, byte(':')); idx == -1 {
+		// If no @ or : is found, the entire part is the user
+		out.User = uriPart
+		return
 	}
 
 	// Trim off the password from the user section
@@ -154,19 +174,14 @@ func parseUri(uriPart []byte, out *SipContact) {
 	}
 
 	// If uri contains : Split the remaining part into host and port
-	if bytes.ContainsAny(uriPart, ":") {
-		hostPort := bytes.Split(uriPart, []byte(":"))
-		if len(hostPort) == 2 {
-			out.Host = hostPort[0]
-			out.Port = hostPort[1]
-		} else {
-			out.Host = uriPart
-		}
-		return
+	hostPort := bytes.Split(uriPart, []byte(":"))
+	if len(hostPort) == 2 {
+		out.Host = hostPort[0]
+		out.Port = hostPort[1]
+	} else {
+		out.Host = uriPart
 	}
-	fmt.Printf("uriPart:%s\n", uriPart)
-	// If uri does not contain : then the remaining part is the user
-	out.User = uriPart
+
 }
 
 func parseSipContactHeaderParams(paramsPart []byte, out *SipContact) {
