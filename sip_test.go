@@ -526,7 +526,10 @@ func Test_sipParse_GenericTest(t *testing.T) {
 			Host:    []byte("10.123.128.137"),
 			Port:    []byte("5060"),
 			Tran:    []byte(nil),
+			Qval:    []byte(nil),
 			Expires: []byte(nil),
+			Maddr:   []byte(nil),
+			Tgrp:    []byte("PST_IB2_B2BUA_04_01"),
 			Src:     []byte("<sip:+441304380808;tgrp=PST_IB2_B2BUA_04_01;trunk-context=hex-mgc-01.gamma.uktel.org.uk@10.123.128.137:5060;user=phone>"),
 		},
 		Via: []SipVia{

@@ -40,6 +40,7 @@ type SipContact struct {
 	Qval    []byte // Q Value
 	Expires []byte // Expires
 	Maddr   []byte
+	Tgrp    []byte // tgrp parameter
 	Src     []byte // Full source if needed
 }
 
@@ -72,6 +73,7 @@ func parseSipContact(v []byte, out *SipContact) error {
 	out.Qval = nil
 	out.Expires = nil
 	out.Maddr = nil
+	out.Tgrp = nil
 	out.Src = nil
 
 	// Keep the source line if needed
@@ -136,6 +138,7 @@ func parseUri(uriPart []byte, out *SipContact) {
 
 	// Find if userinfo is present, denoted by @
 	if idx := bytes.IndexByte(uriPart, byte('@')); idx > -1 {
+
 		out.User = uriPart[:idx]
 		uriPart = uriPart[idx+1:]
 	}
@@ -150,14 +153,20 @@ func parseUri(uriPart []byte, out *SipContact) {
 		out.User = out.User[:idx]
 	}
 
-	// Split the remaining part into host and port
-	hostPort := bytes.Split(uriPart, []byte(":"))
-	if len(hostPort) == 2 {
-		out.Host = hostPort[0]
-		out.Port = hostPort[1]
-	} else {
-		out.Host = uriPart
+	// If uri contains : Split the remaining part into host and port
+	if bytes.ContainsAny(uriPart, ":") {
+		hostPort := bytes.Split(uriPart, []byte(":"))
+		if len(hostPort) == 2 {
+			out.Host = hostPort[0]
+			out.Port = hostPort[1]
+		} else {
+			out.Host = uriPart
+		}
+		return
 	}
+
+	// If uri does not contain : then the remaining part is the host
+	out.User = uriPart
 }
 
 func parseSipContactHeaderParams(paramsPart []byte, out *SipContact) {
@@ -199,5 +208,25 @@ func parseSipContactHeaderParams(paramsPart []byte, out *SipContact) {
 			out.Maddr = param[6:]
 			continue
 		}
+
+		// Check for ";tgrp="
+		if bytes.HasPrefix(param, []byte("tgrp=")) {
+			out.Tgrp = param[5:]
+			continue
+		}
+
+		// Check for ";trunk-context=" split host and port
+		if bytes.HasPrefix(param, []byte("trunk-context=")) {
+			uid := bytes.Split(param[14:], []byte("@"))
+			if len(uid) == 2 {
+				hostPort := bytes.Split(uid[1], []byte(":"))
+				if len(hostPort) == 2 {
+					out.Host = hostPort[0]
+					out.Port = hostPort[1]
+				}
+			}
+			continue
+		}
+
 	}
 }
