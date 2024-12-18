@@ -1,6 +1,7 @@
 package siprocket
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -70,32 +71,33 @@ func parseSipVia(v []byte, out *SipVia) {
 					// Transport type
 					state = FIELD_HOST
 					pos = pos + 8
-					if getString(v, pos, pos+3) == "UDP" {
+					if strings.ToUpper(getString(v, pos, pos+3)) == "UDP" {
 						out.Trans = "udp"
 						pos = pos + 3
+						fmt.Printf("pos-upd:%d", pos)
 						continue
 					}
-					if getString(v, pos, pos+3) == "TCP" {
+					if strings.ToUpper(getString(v, pos, pos+3)) == "TCP" {
 						out.Trans = "tcp"
 						pos = pos + 3
 						continue
 					}
-					if getString(v, pos, pos+3) == "TLS" {
+					if strings.ToUpper(getString(v, pos, pos+3)) == "TLS" {
 						out.Trans = "tls"
 						pos = pos + 3
 						continue
 					}
-					if getString(v, pos, pos+4) == "SCTP" {
+					if strings.ToUpper(getString(v, pos, pos+4)) == "SCTP" {
 						out.Trans = "sctp"
 						pos = pos + 4
 						continue
 					}
-					if getString(v, pos, pos+3) == "WSS" {
+					if strings.ToUpper(getString(v, pos, pos+3)) == "WSS" {
 						out.Trans = "wss"
 						pos = pos + 3
 						continue
 					}
-					if getString(v, pos, pos+2) == "WS" {
+					if strings.ToUpper(getString(v, pos, pos+2)) == "WS" {
 						out.Trans = "ws"
 						pos = pos + 2
 						continue

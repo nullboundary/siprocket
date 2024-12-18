@@ -3,6 +3,7 @@ package siprocket
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 /*
@@ -138,7 +139,6 @@ func parseUri(uriPart []byte, out *SipContact) {
 
 	// Find if userinfo is present, denoted by @
 	if idx := bytes.IndexByte(uriPart, byte('@')); idx > -1 {
-
 		out.User = uriPart[:idx]
 		uriPart = uriPart[idx+1:]
 	}
@@ -164,8 +164,8 @@ func parseUri(uriPart []byte, out *SipContact) {
 		}
 		return
 	}
-
-	// If uri does not contain : then the remaining part is the host
+	fmt.Printf("uriPart:%s\n", uriPart)
+	// If uri does not contain : then the remaining part is the user
 	out.User = uriPart
 }
 
