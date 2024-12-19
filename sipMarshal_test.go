@@ -156,7 +156,7 @@ Content-Length: 0
 func Test_sipMarshal_Invite_test(t *testing.T) {
 
 	msgData := SipMsg{
-		Req:     NewSipReq("INVITE", "sip", "1001", "127.0.0.1", "", "", "", "", "INVITE sip:1001@127.0.0.1 SIP/2.0"),
+		Req:     NewSipReq("INVITE", "sip", "1001", "127.0.0.1", "", "", "", "", "", "INVITE sip:1001@127.0.0.1 SIP/2.0"),
 		From:    NewSipFrom("sip", "bob", "bob", "127.0.0.1", "", "dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc", `"bob" <sip:bob@127.0.0.1>;tag=dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc`),
 		To:      NewSipTo("sip", "1001", "1001", "127.0.0.1", "", "", `"1001" <sip:1001@127.0.0.1>;tag=`),
 		Contact: NewSipContact("sip", "bob", "bob", "127.0.0.1", "65223", "", "", "", "", `"bob" <sip:bob@127.0.0.1:65223>`),
@@ -234,6 +234,47 @@ a=ssrc:335007840 cname:4ef325353d0fe311
 	if normOut != normExp {
 		t.Errorf("Mismatch:\nExpected:\n%q\nGot:\n%q", normExp, normOut)
 	}
+}
+
+func Test_sipMarshal_Response_test(t *testing.T) {
+
+	msgData := SipMsg{
+		Req: NewSipReq("", "", "", "", "", "", "SIP/2.0", "200", "OK", "SIP/2.0 200 OK"),
+		Via: []SipVia{
+			NewSipVia("udp", "127.0.0.1", "65223", "z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV", "", "SIP/2.0/udp 127.0.0.1:65223;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV;rport="),
+		},
+		From:    NewSipFrom("sip", "bob", "bob", "127.0.0.1", "", "dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc", `"bob" <sip:bob@127.0.0.1>;tag=dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc`),
+		To:      NewSipTo("sip", "alice", "alice", "127.0.0.1", "", "z9hG4bK1811891bb91f7ef8", `"alice" <sip:alice@127.0.0.1>;tag=z9hG4bK1811891bb91f7ef8`),
+		Contact: NewSipContact("sip", "alice", "alice", "192.168.7.219", "5060", "UDP", "", "", "", `"alice" <sip:alice@192.168.7.219:5060;transport=UDP>`),
+		CallId:  NewSipVal("A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI", "A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI"),
+		Cseq:    NewSipCseq("5023", "CANCEL", "5023 CANCEL"),
+		Ua:      NewSipVal("Telephone 1.6", "Telephone 1.6"),
+		Exp:     NewSipVal("3600", "3600"),
+		ContLen: NewSipVal("0", "0"),
+	}
+
+	exp := `SIP/2.0 200 OK
+Via: SIP/2.0/UDP 127.0.0.1:65223;rport;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV
+From: "bob" <sip:bob@127.0.0.1>;tag=dbnZLsDcuJ64mJQxdkaW0PCRkEOmWYwc
+To: "alice" <sip:alice@127.0.0.1>;tag=z9hG4bK1811891bb91f7ef8
+Contact: "alice" <sip:alice@192.168.7.219:5060;transport=UDP>
+Call-ID: A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI
+CSeq: 5023 CANCEL
+User-Agent: Telephone 1.6
+Expires: 3600
+Content-Length: 0
+
+`
+
+	out := Marshal(&msgData)
+	// Normalize line endings to \n for comparison
+	normExp := strings.ReplaceAll(exp, "\r\n", "\n")
+	normOut := strings.ReplaceAll(out, "\r\n", "\n")
+
+	if normOut != normExp {
+		t.Errorf("Mismatch:\nExpected:\n%q\nGot:\n%q", normExp, normOut)
+	}
+
 }
 
 func BenchmarkMarshal(b *testing.B) {

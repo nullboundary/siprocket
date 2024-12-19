@@ -56,11 +56,20 @@ func writeHeaders(sb *strings.Builder, data *SipMsg) {
 
 // writeStatusLine writes the Status Line or Request Line to the string builder
 func writeRequestLine(sb *strings.Builder, data *SipMsg) {
+
+	// This is a response header write the Status Line
+	if len(data.Req.StatusCode) > 0 {
+		fmt.Fprintf(sb, "%s %s %s%s", data.Req.SipVersion, data.Req.StatusCode, data.Req.StatusDesc, ENDL)
+		return
+	}
+
+	// This is a request header write the Request Line
 	if data.Req.User == nil {
 		fmt.Fprintf(sb, "%s sip:%s SIP/2.0%s", data.Req.Method, data.Req.Host, ENDL)
 		return
 	}
 	fmt.Fprintf(sb, "%s sip:%s@%s SIP/2.0%s", data.Req.Method, data.Req.User, data.Req.Host, ENDL)
+
 }
 
 // writeViaHeaders writes the Via headers to the string builder
@@ -100,7 +109,7 @@ func writeToHeader(sb *strings.Builder, data *SipMsg) {
 // writeContactHeader writes the Contact header to the string builder
 func writeContactHeader(sb *strings.Builder, data *SipMsg) {
 	if string(data.Contact.Tran) != "" {
-		fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s:%s;transport=%s>%s", HEADER_CONTACT, data.Contact.User, data.Contact.User, data.Contact.Host, data.Contact.Port, data.Contact.Tran, ENDL)
+		fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s:%s;transport=%s", HEADER_CONTACT, data.Contact.User, data.Contact.User, data.Contact.Host, data.Contact.Port, data.Contact.Tran)
 	} else {
 		fmt.Fprintf(sb, "%s: \"%s\" <sip:%s@%s:%s", HEADER_CONTACT, data.Contact.User, data.Contact.User, data.Contact.Host, data.Contact.Port)
 	}

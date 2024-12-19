@@ -17,16 +17,17 @@ import (
 type SipReq struct {
 	Method     []byte // Sip Method eg INVITE etc
 	UriType    []byte // Type of URI sip, sips, tel etc
-	StatusCode []byte // Status Code eg 100
-	StatusDesc []byte // Status Code Description eg trying
 	User       []byte // User part
 	Host       []byte // Host part
 	Port       []byte // Port number
 	UserType   []byte // User Type
+	SipVersion []byte // SIP Version SIP/2.0
+	StatusCode []byte // Status Code eg 100
+	StatusDesc []byte // Status Code Description eg trying
 	Src        []byte // Full source if needed
 }
 
-func NewSipReq(method, uriType, user, host, port, userType, statusCode, statusDesc, src string) SipReq {
+func NewSipReq(method, uriType, user, host, port, userType, sipVersion, statusCode, statusDesc, src string) SipReq {
 	return SipReq{
 		Method:     []byte(method),
 		UriType:    []byte(uriType),
@@ -34,6 +35,7 @@ func NewSipReq(method, uriType, user, host, port, userType, statusCode, statusDe
 		Host:       []byte(host),
 		Port:       []byte(port),
 		UserType:   []byte(userType),
+		SipVersion: []byte(sipVersion), // SIP Version
 		StatusCode: []byte(statusCode),
 		StatusDesc: []byte(statusDesc),
 		Src:        []byte(src),
@@ -221,6 +223,8 @@ func parseSipReq(v []byte, out *SipReq) error {
 
 func parseSipResp(v []byte, out *SipReq) error {
 	var idx, idy int
+
+	out.SipVersion = v[:7]
 
 	// Get statuscode middle bit.
 	if idx = bytes.Index(v, []byte(" ")); idx == -1 {

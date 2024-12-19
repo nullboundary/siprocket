@@ -618,12 +618,13 @@ func Test_sipParse_302Test(t *testing.T) {
 		Req: SipReq{
 			Method:     []byte(nil),
 			UriType:    []byte(nil),
-			StatusCode: []byte("302"),
-			StatusDesc: []byte("Moved temporarily"),
 			User:       []byte(nil),
 			Host:       []byte(nil),
 			Port:       []byte(nil),
 			UserType:   []byte(nil),
+			SipVersion: []byte("SIP/2.0"),
+			StatusCode: []byte("302"),
+			StatusDesc: []byte("Moved temporarily"),
 			Src:        []byte("SIP/2.0 302 Moved temporarily"),
 		},
 		From: SipFrom{
@@ -889,7 +890,7 @@ Expires: 3600
 Content-Length: 0
 `
 	exp = SipMsg{
-		Req: NewSipReq("", "", "", "", "", "", "200", "OK", "SIP/2.0 200 OK"),
+		Req: NewSipReq("", "", "", "", "", "", "SIP/2.0", "200", "OK", "SIP/2.0 200 OK"),
 		Via: []SipVia{
 			NewSipVia("udp", "127.0.0.1", "65223", "z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV", "", "SIP/2.0/udp 127.0.0.1:65223;branch=z9hG4bKPjS7DclXXdEgN6Bz9TwtlXYn2Y1CX9MXQV;rport="),
 		},
