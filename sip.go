@@ -31,7 +31,7 @@ type SipMsg struct {
 
 type SdpMsg struct {
 	Version   []byte
-	Origin    []byte
+	Origin    SdpOrigin
 	Session   []byte
 	Timing    []byte
 	MediaDesc SdpMediaDesc
@@ -138,7 +138,8 @@ func Parse(v []byte) (output SipMsg) {
 				case lhdr == "v":
 					output.Sdp.Version = lval
 				case lhdr == "o":
-					output.Sdp.Origin = lval
+					parseSdpOrigin(lval, &output.Sdp.Origin)
+					// output.Sdp.Origin = lval
 				case lhdr == "s":
 					output.Sdp.Session = lval
 				case lhdr == "t":
@@ -390,6 +391,10 @@ const (
 	FIELD_NC
 	FIELD_CNONCE
 
+	FIELD_SESSID
+	FIELD_SESSVER
+	FIELD_UNICASTADDR
+	FIELD_NETTYPE
 	FIELD_ADDRTYPE
 	FIELD_CONNADDR
 	FIELD_MEDIA

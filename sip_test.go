@@ -267,6 +267,7 @@ a=rtpmap:9 G722/8000`
 				},
 			},
 			ConnData: SdpConnData{
+				NetType:  []byte("IN"),
 				AddrType: []byte("IP4"),
 				ConnAddr: []byte("127.0.0.1"),
 				Src:      []byte("IN IP4 127.0.0.1"),
@@ -413,7 +414,15 @@ a=ptime:20`
 		},
 		Sdp: SdpMsg{
 			Version: []byte("0"),
-			Origin:  []byte("server1 3487 929 IN IP4 10.0.0.2"),
+			Origin: SdpOrigin{
+				Username:    []byte("server1"),
+				SessId:      []byte("3487"),
+				SessVer:     []byte("929"),
+				NetType:     []byte("IN"),
+				AddrType:    []byte("IP4"),
+				UnicastAddr: []byte("10.0.0.2"),
+				Src:         []byte("server1 3487 929 IN IP4 10.0.0.2"),
+			},
 			Session: []byte("sip call"),
 			Timing:  []byte("0 0"),
 			MediaDesc: SdpMediaDesc{
@@ -456,6 +465,7 @@ a=ptime:20`
 				},
 			},
 			ConnData: SdpConnData{
+				NetType:  []byte("IN"),
 				AddrType: []byte("IP4"),
 				ConnAddr: []byte("10.120.204.1"),
 				Src:      []byte("IN IP4 10.120.204.1"),

@@ -203,8 +203,9 @@ func writeSdpBody(sdp *SdpMsg) string {
 	}
 
 	// Write Origin
-	if sdp.Origin != nil {
-		fmt.Fprintf(&sb, "o=%s%s", sdp.Origin, ENDL)
+	if sdp.Origin.UnicastAddr != nil {
+		o := sdp.Origin
+		fmt.Fprintf(&sb, "o=%s %s %s %s %s %s%s", o.Username, o.SessId, o.SessVer, o.NetType, o.AddrType, o.UnicastAddr, ENDL)
 	}
 
 	// Write Session Name
@@ -223,7 +224,7 @@ func writeSdpBody(sdp *SdpMsg) string {
 
 	// Write Connection Data
 	if sdp.ConnData.AddrType != nil {
-		fmt.Fprintf(&sb, "c=%s %s%s", sdp.ConnData.AddrType, sdp.ConnData.ConnAddr, ENDL)
+		fmt.Fprintf(&sb, "c=%s %s %s%s", sdp.ConnData.NetType, sdp.ConnData.AddrType, sdp.ConnData.ConnAddr, ENDL)
 	}
 
 	// Write Attributes

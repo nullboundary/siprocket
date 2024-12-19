@@ -171,7 +171,7 @@ func Test_sipMarshal_Invite_test(t *testing.T) {
 		CallId:   NewSipVal("A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI", "A6LbNFTZyRDzORcdsBtwmGN1h4KIuYPI"),
 		Sdp: SdpMsg{
 			Version:   []byte("0"),
-			Origin:    []byte("- 4000 4000 IN IP4 192.168.7.219"),
+			Origin:    NewSdpOrigin("-", "4000", "4000", "IN", "IP4", "192.168.7.219", "- 4000 4000 IN IP4 192.168.7.219"),
 			Session:   []byte("-"),
 			Timing:    []byte("0 0"),
 			MediaDesc: NewSdpMediaDesc("audio", "4000", "RTP/AVP", "96 9 8 0 101 102", "m=audio 4000 RTP/AVP 96 9 8 0 101 102"),
@@ -190,7 +190,7 @@ func Test_sipMarshal_Invite_test(t *testing.T) {
 				NewSdpAttrib("fmtp", "102 0-16", "a=fmtp:102 0-16"),
 				NewSdpAttrib("ssrc", "335007840 cname:4ef325353d0fe311", "a=ssrc:335007840 cname:4ef325353d0fe311"),
 			},
-			ConnData: NewSdpConnData("IN", "IP4 192.168.7.219", "c=IN IP4 192.168.7.219"),
+			ConnData: NewSdpConnData("IN", "IP4", "192.168.7.219", "c=IN IP4 192.168.7.219"),
 		},
 	}
 
