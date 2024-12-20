@@ -217,6 +217,15 @@ func writeSdpBody(sdp *SdpMsg) string {
 		fmt.Fprintf(&sb, "t=%s%s", sdp.Timing, ENDL)
 	}
 
+	// Write Bandwidth
+	for _, band := range sdp.Bandwidth {
+		if string(band.Val) == "" {
+			fmt.Fprintf(&sb, "b=%s%s", band.Cat, ENDL)
+			continue
+		}
+		fmt.Fprintf(&sb, "b=%s:%s%s", band.Cat, band.Val, ENDL)
+	}
+
 	// Write Media Description
 	if sdp.MediaDesc.MediaType != nil {
 		fmt.Fprintf(&sb, "m=%s %s %s %s%s", sdp.MediaDesc.MediaType, sdp.MediaDesc.Port, sdp.MediaDesc.Proto, sdp.MediaDesc.Fmt, ENDL)

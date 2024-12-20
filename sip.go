@@ -34,6 +34,7 @@ type SdpMsg struct {
 	Origin    SdpOrigin
 	Session   []byte
 	Timing    []byte
+	Bandwidth []SdpAttrib
 	MediaDesc SdpMediaDesc
 	Attrib    []SdpAttrib
 	ConnData  SdpConnData
@@ -63,6 +64,7 @@ func Parse(v []byte) (output SipMsg) {
 	output.Via = make([]SipVia, 0, 8)
 	attr_idx := 0
 	output.Sdp.Attrib = make([]SdpAttrib, 0, 8)
+	output.Sdp.Bandwidth = make([]SdpAttrib, 0, 8)
 
 	lines := bytes.Split(v, []byte("\r\n"))
 	if len(lines) < 2 {
@@ -153,7 +155,12 @@ func Parse(v []byte) (output SipMsg) {
 					output.Sdp.Attrib = append(output.Sdp.Attrib, tmpAttrib)
 					parseSdpAttrib(lval, &output.Sdp.Attrib[attr_idx])
 					attr_idx++
-
+				case lhdr == "b":
+					// Same as above but for Bandwidth
+					var tmpAttrib SdpAttrib
+					output.Sdp.Bandwidth = append(output.Sdp.Bandwidth, tmpAttrib)
+					parseSdpAttrib(lval, &output.Sdp.Bandwidth[attr_idx])
+					attr_idx++
 				} // End of Switch
 
 			}

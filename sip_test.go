@@ -112,7 +112,8 @@ func Test_sipParse_Nonsense(t *testing.T) {
 				Fmt:       []byte(nil),
 				Src:       []byte(nil),
 			},
-			Attrib: []SdpAttrib{},
+			Bandwidth: []SdpAttrib{},
+			Attrib:    []SdpAttrib{},
 			ConnData: SdpConnData{
 				AddrType: []byte(nil),
 				ConnAddr: []byte(nil),
@@ -254,6 +255,7 @@ a=rtpmap:9 G722/8000`
 				Fmt:       []byte("111 9 8 101"),
 				Src:       []byte("audio 51268 RTP/AVP 111 9 8 101"),
 			},
+			Bandwidth: []SdpAttrib{},
 			Attrib: []SdpAttrib{
 				{
 					Cat: []byte("rtpmap"),
@@ -423,8 +425,9 @@ a=ptime:20`
 				UnicastAddr: []byte("10.0.0.2"),
 				Src:         []byte("server1 3487 929 IN IP4 10.0.0.2"),
 			},
-			Session: []byte("sip call"),
-			Timing:  []byte("0 0"),
+			Session:   []byte("sip call"),
+			Timing:    []byte("0 0"),
+			Bandwidth: []SdpAttrib{},
 			MediaDesc: SdpMediaDesc{
 				MediaType: []byte("audio"),
 				Port:      []byte("11484"),
@@ -596,7 +599,8 @@ func Test_sipParse_GenericTest(t *testing.T) {
 				Fmt:       []byte(nil),
 				Src:       []byte(nil),
 			},
-			Attrib: []SdpAttrib{},
+			Bandwidth: []SdpAttrib{},
+			Attrib:    []SdpAttrib{},
 			ConnData: SdpConnData{
 				AddrType: []byte(nil),
 				ConnAddr: []byte(nil),
@@ -724,7 +728,8 @@ func Test_sipParse_302Test(t *testing.T) {
 				Fmt:       []byte(nil),
 				Src:       []byte(nil),
 			},
-			Attrib: []SdpAttrib{},
+			Bandwidth: []SdpAttrib{},
+			Attrib:    []SdpAttrib{},
 			ConnData: SdpConnData{
 				AddrType: []byte(nil),
 				ConnAddr: []byte(nil),
@@ -868,7 +873,8 @@ func Test_sipParse_AuthTest(t *testing.T) {
 				Fmt:       []byte(nil),
 				Src:       []byte(nil),
 			},
-			Attrib: []SdpAttrib{},
+			Bandwidth: []SdpAttrib{},
+			Attrib:    []SdpAttrib{},
 			ConnData: SdpConnData{
 				AddrType: []byte(nil),
 				ConnAddr: []byte(nil),
@@ -912,6 +918,7 @@ Content-Length: 0
 		Ua:      NewSipVal("Telephone 1.6", "Telephone 1.6"),
 		Exp:     NewSipVal("3600", "3600"),
 		ContLen: NewSipVal("0", "0"),
+		Sdp:     SdpMsg{nil, SdpOrigin{}, nil, nil, []SdpAttrib{}, SdpMediaDesc{}, []SdpAttrib{}, SdpConnData{}},
 	}
 
 	out = Parse([]byte(msg))
